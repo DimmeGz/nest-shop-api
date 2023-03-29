@@ -21,7 +21,6 @@ export class UsersService {
   }
 
   async findOne(id: number): Promise<User> {
-    console.log(id);
     try {
       return await this.userRepository.findOneByOrFail({ id });
     } catch (e) {
