@@ -4,7 +4,8 @@ import { Repository } from "typeorm";
 import { User } from "./entities/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import * as bcrypt from 'bcryptjs'
+import * as bcrypt from "bcryptjs";
+import * as jwt from "jsonwebtoken";
 
 
 @Injectable()
@@ -34,7 +35,12 @@ export class UsersService {
       newUser.password = await bcrypt.hash(newUser.password, 10);
       newUser.role = "user";
       await User.save(newUser);
-      return newUser;
+
+      const JWTKey = process.env.JWT_SECRET;
+      const payload = { id: newUser.id, role: newUser.role };
+      const token = jwt.sign({ user: payload }, JWTKey!);
+
+      return token;
     } catch (e) {
       throw e;
     }
@@ -58,12 +64,12 @@ export class UsersService {
       const result = await this.userRepository.delete(id);
       return result;
     } catch (e) {
-      throw e
+      throw e;
     }
   }
 
   async findByName(username: string): Promise<any> {
-    return await this.userRepository.findOneByOrFail([{ phone: username }, {email: username}]);
+    return await this.userRepository.findOneByOrFail([{ phone: username }, { email: username }]);
   }
 
   async checkUnique(property: Object): Promise<User> {
