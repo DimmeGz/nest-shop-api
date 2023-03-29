@@ -30,7 +30,7 @@ export class UsersController {
   }
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto): Promise<void> {
+  create(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.userService.create(createUserDto)
   }
 
@@ -40,7 +40,7 @@ export class UsersController {
   }
 
   @Patch(':id')
-  update(@Body() updateUserDto: UpdateUserDto, @Param('id') id: number): Promise<void> {
+  update(@Body() updateUserDto: UpdateUserDto, @Param('id') id: number): Promise<User> {
     return this.userService.update(id, updateUserDto)
   }
 

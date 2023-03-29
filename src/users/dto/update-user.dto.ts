@@ -7,7 +7,7 @@ export class UpdateUserDto {
 
   @IsString()
   @MinLength(6)
-  readonly password: string
+  public password: string
 
   @IsPhoneNumber('UA')
   readonly phone: string

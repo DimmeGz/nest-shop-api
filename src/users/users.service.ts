@@ -4,6 +4,7 @@ import { Repository } from "typeorm";
 import { User } from "./entities/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
+import * as bcrypt from 'bcryptjs'
 
 
 @Injectable()
@@ -12,39 +13,52 @@ export class UsersService {
   }
 
   async findAll(): Promise<User[]> {
-    return await this.userRepository.find();
+    try {
+      return await this.userRepository.find();
+    } catch (e) {
+      throw e;
+    }
   }
 
   async findOne(id: number): Promise<User> {
     try {
       return await this.userRepository.findOneByOrFail({ id });
     } catch (e) {
-      return e;
+      throw e;
     }
   }
 
   async create(createUserDto: CreateUserDto) {
     try {
       const newUser: User = this.userRepository.create(createUserDto);
-      newUser.role = 'user';
+      newUser.password = await bcrypt.hash(newUser.password, 10);
+      newUser.role = "user";
       await User.save(newUser);
       return newUser;
     } catch (e) {
-      return e;
+      throw e;
     }
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
     try {
+      const user = await this.userRepository.findOneByOrFail({ id });
+      if (updateUserDto.password) {
+        updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
+      }
       await this.userRepository.update({ id }, updateUserDto);
       return await this.userRepository.findOneByOrFail({ id });
     } catch (e) {
-      return e;
+      throw e;
     }
   }
 
   async remove(id: number) {
-    const result = await this.userRepository.delete(id);
-    return result;
+    try {
+      const result = await this.userRepository.delete(id);
+      return result;
+    } catch (e) {
+      throw e
+    }
   }
 }
