@@ -9,18 +9,6 @@ import * as bcrypt from 'bcryptjs'
 
 @Injectable()
 export class UsersService {
-  private readonly fakeUsers = [
-    {
-      userId: 1,
-      username: 'john',
-      password: 'changeme',
-    },
-    {
-      userId: 2,
-      username: 'maria',
-      password: 'guess',
-    },
-  ];
   constructor(@InjectRepository(User) private userRepository: Repository<User>) {
   }
 
@@ -33,6 +21,7 @@ export class UsersService {
   }
 
   async findOne(id: number): Promise<User> {
+    console.log(id);
     try {
       return await this.userRepository.findOneByOrFail({ id });
     } catch (e) {
@@ -54,7 +43,7 @@ export class UsersService {
 
   async update(id: number, updateUserDto: UpdateUserDto) {
     try {
-      const user = await this.userRepository.findOneByOrFail({ id });
+      // const user = await this.userRepository.findOneByOrFail({ id });
       if (updateUserDto.password) {
         updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
       }
@@ -76,5 +65,9 @@ export class UsersService {
 
   async findByName(username: string): Promise<any> {
     return await this.userRepository.findOneByOrFail([{ phone: username }, {email: username}]);
+  }
+
+  async checkUnique(property: Object): Promise<User> {
+    return await this.userRepository.findOneBy(property);
   }
 }

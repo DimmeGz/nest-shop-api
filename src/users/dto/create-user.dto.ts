@@ -1,4 +1,5 @@
-import {IsNotEmpty, IsEmail, IsString, MinLength, IsPhoneNumber} from 'class-validator'
+import { IsNotEmpty, IsEmail, IsString, MinLength, IsPhoneNumber, Validate } from "class-validator";
+import { UserExistsRule } from "../../middleware/unique.validator";
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -13,9 +14,11 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @IsPhoneNumber('UA')
+  @Validate(UserExistsRule)
   readonly phone: string
 
   @IsNotEmpty()
   @IsEmail()
+  @Validate(UserExistsRule)
   readonly email: string
 }
