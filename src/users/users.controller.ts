@@ -6,7 +6,7 @@ import {
   Post,
   Patch,
   Body
-} from '@nestjs/common'
+} from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { User } from "./entities/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
