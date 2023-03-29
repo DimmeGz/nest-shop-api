@@ -9,6 +9,18 @@ import * as bcrypt from 'bcryptjs'
 
 @Injectable()
 export class UsersService {
+  private readonly fakeUsers = [
+    {
+      userId: 1,
+      username: 'john',
+      password: 'changeme',
+    },
+    {
+      userId: 2,
+      username: 'maria',
+      password: 'guess',
+    },
+  ];
   constructor(@InjectRepository(User) private userRepository: Repository<User>) {
   }
 
@@ -60,5 +72,9 @@ export class UsersService {
     } catch (e) {
       throw e
     }
+  }
+
+  async findByName(username: string): Promise<any> {
+    return await this.userRepository.findOneByOrFail([{ phone: username }, {email: username}]);
   }
 }
