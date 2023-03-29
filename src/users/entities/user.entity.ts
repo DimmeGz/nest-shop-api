@@ -8,16 +8,16 @@ export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true })
+  @Column()
   name: string;
 
   @Column()
   password: string;
 
-  @Column()
+  @Column({ unique: true })
   phone: string;
 
-  @Column()
+  @Column({ unique: true })
   email: string;
 
   @Column()
