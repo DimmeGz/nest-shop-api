@@ -53,8 +53,9 @@ export class OrdersService {
           // update product.buyersCount
           if (newOrder.status === 'completed') {
             productInstance.buyersCount += 1
-            await Product.save(productInstance)
           }
+          productInstance.count -= qty
+          await Product.save(productInstance)
         }
       }
       await Order.save(newOrder);
@@ -95,8 +96,9 @@ export class OrdersService {
           const productInstance = await this.productRepository.findOneOrFail({where: { id: row.product.id } });
           if (order.status === 'completed') {
             productInstance.buyersCount -= 1
-            await Product.save(productInstance)
           }
+          productInstance.count += row.qty
+          await Product.save(productInstance)
         }
         order.sum = 0
         order.orderRows = []
@@ -113,8 +115,9 @@ export class OrdersService {
             // update product.buyersCount
             if (order.status === 'completed') {
               productInstance.buyersCount += 1
-              await Product.save(productInstance)
             }
+            productInstance.count -= row.qty
+            await Product.save(productInstance)
           }
         }
       }
@@ -142,8 +145,9 @@ export class OrdersService {
         const productInstance = await this.productRepository.findOneOrFail({where: { id: row.product.id } });
         if (order.status === 'completed') {
           productInstance.buyersCount -= 1
-          await Product.save(productInstance)
         }
+        productInstance.count += row.qty
+        await Product.save(productInstance)
       }
 
       await Order.remove(order)
