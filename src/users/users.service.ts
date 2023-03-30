@@ -17,7 +17,7 @@ export class UsersService {
     try {
       return await this.userRepository.find();
     } catch (e) {
-      throw e;
+      return e;
     }
   }
 
@@ -25,7 +25,7 @@ export class UsersService {
     try {
       return await this.userRepository.findOneByOrFail({ id });
     } catch (e) {
-      throw e;
+      return e;
     }
   }
 
@@ -42,20 +42,19 @@ export class UsersService {
 
       return token;
     } catch (e) {
-      throw e;
+      return e;
     }
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
     try {
-      // const user = await this.userRepository.findOneByOrFail({ id });
       if (updateUserDto.password) {
         updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
       }
       await this.userRepository.update({ id }, updateUserDto);
       return await this.userRepository.findOneByOrFail({ id });
     } catch (e) {
-      throw e;
+      return e;
     }
   }
 
@@ -64,15 +63,23 @@ export class UsersService {
       const result = await this.userRepository.delete(id);
       return result;
     } catch (e) {
-      throw e;
+      return e;
     }
   }
 
   async findByName(username: string): Promise<any> {
-    return await this.userRepository.findOneByOrFail([{ phone: username }, { email: username }]);
+    try {
+      return await this.userRepository.findOneByOrFail([{ phone: username }, { email: username }]);
+    }catch (e) {
+      return e
+    }
   }
 
   async checkUnique(property: Object): Promise<User> {
-    return await this.userRepository.findOneBy(property);
+    try {
+      return await this.userRepository.findOneBy(property);
+    } catch (e) {
+      return e
+    }
   }
 }
