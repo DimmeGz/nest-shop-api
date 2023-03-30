@@ -13,6 +13,7 @@ import { User } from "./users/entities/user.entity";
 import { Category } from "./products/entities/category.entity";
 import { Product } from "./products/entities/product.entity";
 import { Comment } from "./products/entities/comment.entity";
+import { Image } from "./products/entities/image.entity";
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { Comment } from "./products/entities/comment.entity";
     TypeOrmModule.forRoot({
       type: "sqlite",
       database: "db.sqlite",
-      entities: [User, Category, Product, Comment],
+      entities: [User, Category, Product, Comment, Image],
       synchronize: true
     }),
     UsersModule,
