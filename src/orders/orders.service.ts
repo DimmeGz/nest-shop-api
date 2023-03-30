@@ -90,16 +90,7 @@ export class OrdersService {
       } else {
         // delete old rows
         const orderRows = await this.orderRowRepository.find({where: { order: { id: id } }});
-        for await (let row of orderRows) {
-          await OrderRow.remove(row)
-          // update product.buyersCount
-          const productInstance = await this.productRepository.findOneOrFail({where: { id: row.product.id } });
-          if (order.status === 'completed') {
-            productInstance.buyersCount -= 1
-          }
-          productInstance.count += row.qty
-          await Product.save(productInstance)
-        }
+        await this.removeProductsFromRows(order, orderRows)
         order.sum = 0
         order.orderRows = []
 
@@ -139,22 +130,26 @@ export class OrdersService {
 
       const orderRows = await this.orderRowRepository.find({where: { order: { id: order.id } }});
 
-      for await (let row of orderRows) {
-        await OrderRow.remove(row)
-        // update product.buyersCount
-        const productInstance = await this.productRepository.findOneOrFail({where: { id: row.product.id } });
-        if (order.status === 'completed') {
-          productInstance.buyersCount -= 1
-        }
-        productInstance.count += row.qty
-        await Product.save(productInstance)
-      }
+      await this.removeProductsFromRows(order, orderRows)
 
       await Order.remove(order)
 
       return { deleted: id };
     } catch (e) {
       return e;
+    }
+  }
+
+  async removeProductsFromRows(order, orderRows) {
+    for await (let row of orderRows) {
+      await OrderRow.remove(row)
+      // update product.buyersCount
+      const productInstance = await this.productRepository.findOneOrFail({where: { id: row.product.id } });
+      if (order.status === 'completed') {
+        productInstance.buyersCount -= 1
+      }
+      productInstance.count += row.qty
+      await Product.save(productInstance)
     }
   }
 }
