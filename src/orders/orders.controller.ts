@@ -17,6 +17,7 @@ export class OrdersController {
   }
 
   @Get(":id")
+  @UseGuards(JwtAuthGuard)
   getOne(@Request() req, @Param("id") id: number): Promise<Order> {
     return this.ordersService.findOne(req, id);
   }
