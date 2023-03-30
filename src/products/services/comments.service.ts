@@ -37,7 +37,6 @@ export class CommentsService {
       return newComment;
 
     } catch (e) {
-      console.log(e);
       return e;
     }
   }

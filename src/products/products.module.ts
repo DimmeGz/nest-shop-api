@@ -18,6 +18,9 @@ import { CommentsController } from "./controllers/comments.controller";
 import { Image } from "./entities/image.entity";
 import { ImagesService } from "./services/images.service";
 import { ImagesController } from "./controllers/images.controller";
+import { RatingsService } from "./services/ratings.service";
+import { RatingsController } from "./controllers/ratings.controller";
+import { Rating } from "./entities/rating.entity";
 
 @Module({
   providers: [
@@ -25,14 +28,24 @@ import { ImagesController } from "./controllers/images.controller";
     CategoriesService,
     CommentsService,
     ImagesService,
+    RatingsService,
   ],
   controllers: [
     ProductsController,
     CategoriesController,
     CommentsController,
     ImagesController,
+    RatingsController,
   ],
-  imports: [TypeOrmModule.forFeature([Product, Category, Comment, User, Image])],
+  imports: [TypeOrmModule
+    .forFeature([
+      Product,
+      Category,
+      Comment,
+      User,
+      Image,
+      Rating,
+    ])],
   exports: [ProductsService]
 })
 export class ProductsModule {
