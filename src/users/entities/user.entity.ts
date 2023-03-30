@@ -1,8 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, BaseEntity } from "typeorm";
 
-type UserRoleType = "admin" | "user"
-
-
 @Entity()
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
