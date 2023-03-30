@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, OneToMany, JoinColumn, ManyToOne } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, ManyToOne } from "typeorm";
 import { Product } from "./product.entity";
 import { User } from "../../users/entities/user.entity";
 

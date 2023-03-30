@@ -1,8 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Response, Request } from "@nestjs/common";
-// import { CreateUserDto } from "./dto/create-user.dto";
-// import { UpdateUserDto } from "./dto/update-user.dto";
-// import { Roles } from "../auth/roles/roles.decorator";
-// import { Role } from "../auth/roles/roles.enum";
+import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
 import { ProductsService } from "../services/products.service";
 import { Product } from "../entities/product.entity";
 import { CreateProductDto } from "../dto/create-product.dto";
@@ -17,12 +13,12 @@ export class ProductsController {
   }
 
   @Get()
-  getAll(@Request() req): Promise<Product[]> {
+  getAll(): Promise<Product[]> {
     return this.productsService.findAll();
   }
 
   @Get(":id")
-  getOne(@Request() req, @Param("id") id: number): Promise<Product> {
+  getOne(@Param("id") id: number): Promise<Product> {
     return this.productsService.findOne(id);
   }
 

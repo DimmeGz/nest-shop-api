@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Response, Request } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { User } from "./entities/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
@@ -14,13 +14,13 @@ export class UsersController {
 
   @Get()
   @Roles(Role.Admin)
-  getAll(@Request() req): Promise<User[]> {
+  getAll(): Promise<User[]> {
     return this.userService.findAll();
   }
 
   @Get(":id")
   @Roles(Role.Admin, Role.Owner)
-  getOne(@Request() req, @Param("id") id: number): Promise<User> {
+  getOne(@Param("id") id: number): Promise<User> {
       return this.userService.findOne(id);
   }
 

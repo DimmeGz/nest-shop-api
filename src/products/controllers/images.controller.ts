@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Request } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
 import { Roles } from "../../auth/roles/roles.decorator";
 import { Role } from "../../auth/roles/roles.enum";
 import { ImagesService } from "../services/images.service";
@@ -13,7 +13,7 @@ export class ImagesController {
   }
 
   @Get()
-  getAll(@Request() req): Promise<Image[]> {
+  getAll(): Promise<Image[]> {
     return this.imagesService.findAll();
   }
 

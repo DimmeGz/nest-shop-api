@@ -1,5 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Response, Request } from "@nestjs/common";
-// import { UpdateUserDto } from "./dto/update-user.dto";
+import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
 
 import { Roles } from "../../auth/roles/roles.decorator";
 import { Role } from "../../auth/roles/roles.enum";
@@ -15,12 +14,12 @@ export class CategoriesController {
   }
 
   @Get()
-  getAll(@Request() req): Promise<Category[]> {
+  getAll(): Promise<Category[]> {
     return this.categoriesService.findAll();
   }
 
   @Get(":id")
-  getOne(@Request() req, @Param("id") id: number): Promise<Category> {
+  getOne(@Param("id") id: number): Promise<Category> {
     return this.categoriesService.findOne(id);
   }
 

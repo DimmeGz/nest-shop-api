@@ -1,5 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Response, Request, UseGuards } from "@nestjs/common";
-import { Category } from "../entities/category.entity";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Request, UseGuards } from "@nestjs/common";
 import { CommentsService } from "../services/comments.service";
 import { Comment } from "../entities/comment.entity";
 import { CreateCommentDto } from "../dto/create-comment.dto";
@@ -13,12 +12,12 @@ export class CommentsController {
   }
 
   @Get()
-  getAll(@Request() req): Promise<Comment[]> {
+  getAll(): Promise<Comment[]> {
     return this.commentsService.findAll();
   }
 
   @Get(":id")
-  getOne(@Request() req, @Param("id") id: number): Promise<Comment> {
+  getOne(@Param("id") id: number): Promise<Comment> {
     return this.commentsService.findOne(id);
   }
 
