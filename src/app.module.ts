@@ -15,6 +15,8 @@ import { Product } from "./products/entities/product.entity";
 import { Comment } from "./products/entities/comment.entity";
 import { Image } from "./products/entities/image.entity";
 import { Rating } from "./products/entities/rating.entity";
+import { Order } from "./orders/entities/order.entity";
+import { OrdersModule } from "./orders/orders.module";
 
 @Module({
   imports: [
@@ -29,12 +31,14 @@ import { Rating } from "./products/entities/rating.entity";
         Comment,
         Image,
         Rating,
+        Order
       ],
       synchronize: true
     }),
     UsersModule,
     AuthModule,
-    ProductsModule
+    ProductsModule,
+    OrdersModule
   ],
   controllers: [],
   providers: [
