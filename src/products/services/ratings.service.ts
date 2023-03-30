@@ -5,10 +5,12 @@ import { Repository } from "typeorm";
 import { Rating } from "../entities/rating.entity";
 import { CreateRatingDto } from "../dto/create-rating.dto";
 import { UpdateRatingDto } from "../dto/update-rating.dto";
+import { Product } from "../entities/product.entity";
 
 @Injectable()
 export class RatingsService {
-  constructor(@InjectRepository(Rating) private ratingRepository: Repository<Rating>) {
+  constructor(@InjectRepository(Rating) private ratingRepository: Repository<Rating>,
+              @InjectRepository(Product) private productRepository: Repository<Product>) {
   }
   async findAll(): Promise<Rating[]> {
     try {
@@ -31,6 +33,17 @@ export class RatingsService {
       const {rating, productId} = createRatingDto
 
       const newRating: Rating = this.ratingRepository.create({ rating, product: {id: productId}, user: {id: req.user.userId} });
+
+      const product = await this.productRepository.findOneOrFail({ where: { id: productId } });
+      if (!product.rating) {
+        product.rating = rating
+      } else {
+        const allRatings = await this.ratingRepository.find({ where: { product: {id: productId}} })
+        const sumRating = allRatings.reduce((acc, obj) => { return acc + obj.rating }, 0)
+        product.rating = (sumRating + rating) / (allRatings.length + 1)
+      }
+      await product.save()
+
       await Rating.save(newRating);
 
       return newRating;
@@ -42,11 +55,22 @@ export class RatingsService {
 
   async update(req, id: number, updateRatingDto: UpdateRatingDto) {
     try {
+      let rating
       if (req.user.role === 'admin') {
-        await this.ratingRepository.update({ id }, updateRatingDto);
-        return await this.ratingRepository.findOneOrFail({where: { id }, relations: ['user', 'product'] });
-      };
-      const rating = await this.ratingRepository.findOneOrFail({where: { id, user: { id: req.user.userId } }, relations: ['user', 'product'] });
+        rating = await this.ratingRepository.findOneOrFail({where: { id }, relations: ['user', 'product'] });
+      } else {
+        rating = await this.ratingRepository.findOneOrFail({
+          where: { id, user: { id: req.user.userId } },
+          relations: ["user", "product"]
+        });
+      }
+
+      const product = await this.productRepository.findOneOrFail({ where: { id: rating.product.id } });
+      const allRatings = await this.ratingRepository.find({ where: { product: {id: product.id}} })
+      const sumRating = allRatings.reduce((acc, obj) => { return acc + obj.rating }, 0)
+      product.rating = (sumRating + updateRatingDto.rating - rating.rating) / allRatings.length
+      await product.save()
+
       Object.assign(rating, updateRatingDto)
       await rating.save()
       return rating
@@ -57,13 +81,27 @@ export class RatingsService {
 
   async remove(req, id: number) {
     try {
-      let result
+      let rating
       if (req.user.role === 'admin') {
-        result = await this.ratingRepository.delete(id);
+        rating = await this.ratingRepository.findOneOrFail({where: { id }, relations: ['user', 'product'] });
       } else {
-        result = await this.ratingRepository.delete({ id, user: { id: req.user.userId } });
+        rating = await this.ratingRepository.findOneOrFail({
+          where: { id, user: { id: req.user.userId } },
+          relations: ["user", "product"]
+        });
       }
-      return result;
+      const product = await this.productRepository.findOneOrFail({ where: { id: rating.product.id } });
+      const allRatings = await this.ratingRepository.find({ where: { product: {id: product.id}} })
+      if (allRatings.length === 1) {
+        product.rating = 0
+        await product.save()
+      } else {
+        let sumRating = allRatings.reduce((acc, obj) => { return acc + obj.rating }, 0) - rating.rating
+        product.rating = sumRating / (allRatings.length - 1)
+        await product.save()
+      }
+      await Rating.remove(rating)
+      return { deleted: id };
     } catch (e) {
       return e;
     }
