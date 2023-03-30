@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, ManyToOne } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, ManyToOne, OneToMany } from "typeorm";
 import { User } from "../../users/entities/user.entity";
+import { OrderRow } from "./order-row.entity";
 
 
 @Entity()
@@ -15,4 +16,7 @@ export class Order extends BaseEntity {
 
   @Column()
   status: string;
+
+  @OneToMany(type => OrderRow, orderRow => orderRow.order)
+  orderRows: OrderRow[];
 }

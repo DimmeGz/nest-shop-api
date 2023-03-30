@@ -17,6 +17,7 @@ import { Image } from "./products/entities/image.entity";
 import { Rating } from "./products/entities/rating.entity";
 import { Order } from "./orders/entities/order.entity";
 import { OrdersModule } from "./orders/orders.module";
+import { OrderRow } from "./orders/entities/order-row.entity";
 
 @Module({
   imports: [
@@ -31,7 +32,8 @@ import { OrdersModule } from "./orders/orders.module";
         Comment,
         Image,
         Rating,
-        Order
+        Order,
+        OrderRow,
       ],
       synchronize: true
     }),
