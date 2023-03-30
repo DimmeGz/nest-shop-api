@@ -22,9 +22,16 @@ export class OrdersService {
     }
   }
 
-  async findOne(id: number): Promise<Order> {
+  async findOne(req, id: number): Promise<Order> {
     try {
-      return await this.ordersRepository.findOneOrFail({where: { id }, relations: ['user', 'orderRows', 'orderRows.product'] });
+      let order
+      if (req.user.role === 'admin') {
+        order = await this.ordersRepository.findOneOrFail({where: { id }, relations: ['user', 'orderRows', 'orderRows.product'] });
+      } else {
+        order = await this.ordersRepository
+          .findOneOrFail({where: { id, user: { id: req.user.userId } }, relations: ['user', 'orderRows', 'orderRows.product'] });
+      };
+      return order;
     } catch (e) {
       return e;
     }
@@ -55,14 +62,7 @@ export class OrdersService {
 
   async update(req, id: number, updateOrderDto: UpdateOrderDto) {
     try {
-      let order
-      if (req.user.role === 'admin') {
-        order = await this.ordersRepository
-          .findOneOrFail({where: { id }, relations: ['user', 'orderRows', 'orderRows.product'] });
-      } else {
-        order = await this.ordersRepository
-          .findOneOrFail({where: { id, user: { id: req.user.userId } }, relations: ['user', 'orderRows', 'orderRows.product'] });
-      }
+      const order = await this.findOne(req, id)
       if (!updateOrderDto.orderRows) {
         Object.assign(order, updateOrderDto)
       } else {

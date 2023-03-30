@@ -17,8 +17,8 @@ export class OrdersController {
   }
 
   @Get(":id")
-  getOne(@Param("id") id: number): Promise<Order> {
-    return this.ordersService.findOne(id);
+  getOne(@Request() req, @Param("id") id: number): Promise<Order> {
+    return this.ordersService.findOne(req, id);
   }
 
   @Post()
