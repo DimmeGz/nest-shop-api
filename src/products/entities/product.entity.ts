@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, BaseEntity } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, ManyToOne, JoinTable } from "typeorm";
+import { Category } from "./category.entity";
 
 @Entity()
 export class Product extends BaseEntity {
@@ -17,9 +18,6 @@ export class Product extends BaseEntity {
   @Column({ default: true })
   isAvailable: boolean
 
-  // @Column()
-  // CategoryId: number
-
   @Column({ default: 0 })
   buyersCount: number
 
@@ -28,4 +26,7 @@ export class Product extends BaseEntity {
 
   @Column({ default: 0 })
   count: number
+
+  @ManyToOne(type => Category, category => category.id)
+  category: Category
 }
