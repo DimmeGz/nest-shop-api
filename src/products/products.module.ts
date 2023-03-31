@@ -1,17 +1,15 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
-import { Product } from "./entities/product.entity";
-import { ProductsService } from "./services/products.service";
-import { ProductsController } from "./controllers/products.controller";
+import { Product } from "./product.entity";
+import { ProductsService } from "./products.service";
+import { ProductsController } from "./products.controller";
 
 import { User } from "../users/entities/user.entity";
 import { Category } from "../categories/category.entity";
 import { Comment } from "../comments/comment.entity";
 import { Image } from "../images/image.entity";
 
-import { RatingsService } from "../ratings/ratings.service";
-import { RatingsController } from "../ratings/ratings.controller";
 import { Rating } from "../ratings/rating.entity";
 import { OrderRow } from "../orders/entities/order-row.entity";
 

@@ -1,10 +1,10 @@
 import { Body, Controller, Get, Param, Patch, Post, Query } from "@nestjs/common";
-import { ProductsService } from "../services/products.service";
-import { Product } from "../entities/product.entity";
-import { CreateProductDto } from "../dto/create-product.dto";
-import { Roles } from "../../auth/roles/roles.decorator";
-import { Role } from "../../auth/roles/roles.enum";
-import { UpdateProductDto } from "../dto/update-product.dto";
+import { ProductsService } from "./products.service";
+import { Product } from "./product.entity";
+import { CreateProductDto } from "./dto/create-product.dto";
+import { Roles } from "../auth/roles/roles.decorator";
+import { Role } from "../auth/roles/roles.enum";
+import { UpdateProductDto } from "./dto/update-product.dto";
 
 
 

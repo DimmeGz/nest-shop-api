@@ -10,7 +10,7 @@ import { AuthModule } from "./auth/auth.module";
 import { ProductsModule } from "./products/products.module";
 
 import { User } from "./users/entities/user.entity";
-import { Product } from "./products/entities/product.entity";
+import { Product } from "./products/product.entity";
 import { Comment } from "./comments/comment.entity";
 import { Image } from "./images/image.entity";
 import { Rating } from "./ratings/rating.entity";

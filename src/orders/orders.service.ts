@@ -6,7 +6,7 @@ import { Order } from "./entities/order.entity";
 import { CreateOrderDto } from "./dto/create-order.dto";
 import { UpdateOrderDto } from "./dto/update-order.dto";
 import { OrderRow } from "./entities/order-row.entity";
-import { Product } from "../products/entities/product.entity";
+import { Product } from "../products/product.entity";
 import { rootLogger } from "ts-jest";
 
 @Injectable()

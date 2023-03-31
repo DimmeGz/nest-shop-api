@@ -5,7 +5,7 @@ import { RatingsService } from "./ratings.service";
 import { RatingsController } from "./ratings.controller";
 import { Rating } from "./rating.entity";
 import { User } from "../users/entities/user.entity";
-import { Product } from "../products/entities/product.entity";
+import { Product } from "../products/product.entity";
 
 @Module({
   providers: [RatingsService],

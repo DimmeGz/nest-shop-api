@@ -1,12 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Product } from "../entities/product.entity";
-import { CreateProductDto } from "../dto/create-product.dto";
-import { UpdateProductDto } from "../dto/update-product.dto";
-import { Comment } from "../../comments/comment.entity";
-import { Image } from "../../images/image.entity";
-import { OrderRow } from "../../orders/entities/order-row.entity";
+import { Product } from "./product.entity";
+import { CreateProductDto } from "./dto/create-product.dto";
+import { UpdateProductDto } from "./dto/update-product.dto";
+import { Comment } from "../comments/comment.entity";
+import { Image } from "../images/image.entity";
+import { OrderRow } from "../orders/entities/order-row.entity";
 
 
 @Injectable()
