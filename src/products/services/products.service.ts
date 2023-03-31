@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Product } from "../entities/product.entity";
@@ -38,7 +38,7 @@ export class ProductsService {
     try {
       return await this.productRepository.findOneOrFail({ where: { id }, relations: ["category"] });
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.NOT_FOUND);
     }
   }
 

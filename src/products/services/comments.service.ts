@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
@@ -23,7 +23,7 @@ export class CommentsService {
     try {
       return await this.commentRepository.findOneOrFail({where: { id }, relations: ['user', 'product'] });
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.NOT_FOUND);
     }
   }
 
@@ -52,7 +52,7 @@ export class CommentsService {
       await comment.save()
       return comment
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.FORBIDDEN);
     }
   }
 
@@ -64,7 +64,10 @@ export class CommentsService {
       } else {
         result = await this.commentRepository.delete({ id, user: { id: req.user.userId } });
       }
-      return result;
+      if (result.affected) {
+        return result;
+      }
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     } catch (e) {
       return e;
     }

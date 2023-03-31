@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Image } from "../entities/image.entity";
@@ -23,7 +23,7 @@ export class ImagesService {
     try {
       return await this.imageRepository.findOneOrFail({ where: { id }, relations: ["product"] });
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.NOT_FOUND);
     }
   }
 

@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
@@ -24,7 +24,7 @@ export class RatingsService {
     try {
       return await this.ratingRepository.findOneOrFail({where: { id }, relations: ['user', 'product'] });
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.NOT_FOUND);
     }
   }
 
@@ -75,7 +75,7 @@ export class RatingsService {
       await rating.save()
       return rating
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.FORBIDDEN);
     }
   }
 
@@ -103,7 +103,7 @@ export class RatingsService {
       await Rating.remove(rating)
       return { deleted: id };
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.FORBIDDEN);
     }
   }
 

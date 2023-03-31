@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Category } from "../entities/category.entity";
@@ -26,7 +26,7 @@ export class CategoriesService {
       const products = await this.productRepository.find({ where: {category: { id: category.id }}})
       return { category, products }
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.NOT_FOUND);
     }
   }
 
