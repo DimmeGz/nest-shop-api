@@ -7,9 +7,9 @@ import { ProductsController } from "./controllers/products.controller";
 
 import { User } from "../users/entities/user.entity";
 
-import { Category } from "./entities/category.entity";
-import { CategoriesService } from "./services/categories.service";
-import { CategoriesController } from "./controllers/categories.controller";
+import { Category } from "../categories/category.entity";
+import { CategoriesService } from "../categories/categories.service";
+import { CategoriesController } from "../categories/categories.controller";
 
 import { Comment } from "./entities/comment.entity";
 import { CommentsService } from "./services/comments.service";
@@ -22,23 +22,24 @@ import { RatingsService } from "./services/ratings.service";
 import { RatingsController } from "./controllers/ratings.controller";
 import { Rating } from "./entities/rating.entity";
 import { OrderRow } from "../orders/entities/order-row.entity";
+import { CategoriesModule } from "../categories/categories.module";
 
 @Module({
   providers: [
     ProductsService,
-    CategoriesService,
     CommentsService,
     ImagesService,
     RatingsService,
   ],
   controllers: [
     ProductsController,
-    CategoriesController,
     CommentsController,
     ImagesController,
     RatingsController,
   ],
-  imports: [TypeOrmModule
+  imports: [
+    CategoriesModule,
+    TypeOrmModule
     .forFeature([
       Product,
       Category,

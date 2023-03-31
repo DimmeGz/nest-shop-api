@@ -1,11 +1,11 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
 
-import { Roles } from "../../auth/roles/roles.decorator";
-import { Role } from "../../auth/roles/roles.enum";
-import { Category } from "../entities/category.entity";
-import { CategoriesService } from "../services/categories.service";
-import { CreateCategoryDto } from "../dto/create-category.dto";
-import { UpdateCategoryDto } from "../dto/update-category.dto";
+import { Roles } from "../auth/roles/roles.decorator";
+import { Role } from "../auth/roles/roles.enum";
+import { Category } from "./category.entity";
+import { CategoriesService } from "./categories.service";
+import { CreateCategoryDto } from "./dto/create-category.dto";
+import { UpdateCategoryDto } from "./dto/update-category.dto";
 
 
 @Controller("categories")

@@ -10,7 +10,6 @@ import { AuthModule } from "./auth/auth.module";
 import { ProductsModule } from "./products/products.module";
 
 import { User } from "./users/entities/user.entity";
-import { Category } from "./products/entities/category.entity";
 import { Product } from "./products/entities/product.entity";
 import { Comment } from "./products/entities/comment.entity";
 import { Image } from "./products/entities/image.entity";
@@ -18,6 +17,8 @@ import { Rating } from "./products/entities/rating.entity";
 import { Order } from "./orders/entities/order.entity";
 import { OrdersModule } from "./orders/orders.module";
 import { OrderRow } from "./orders/entities/order-row.entity";
+import { CategoriesModule } from "./categories/categories.module";
+import { Category } from "./categories/category.entity";
 
 @Module({
   imports: [
@@ -40,7 +41,7 @@ import { OrderRow } from "./orders/entities/order-row.entity";
     UsersModule,
     AuthModule,
     ProductsModule,
-    OrdersModule
+    OrdersModule,
   ],
   controllers: [],
   providers: [
