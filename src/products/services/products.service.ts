@@ -51,28 +51,4 @@ export class ProductsService {
       return e;
     }
   }
-
-  async remove(id: number) {
-    try {
-      const product = await this.productRepository.findOneOrFail({ where: { id } })
-      const existingOrderRows = await this.orderRowRepository.find({ where: { product: { id: product.id } } })
-
-      if (existingOrderRows) {
-        return new Error('Can\'t delete: orders with this product exists')
-      }
-
-      const images = await this.imageRepository.find({ where: { product: { id: product.id } } })
-      const comments: Comment[] = await this.commentRepository.find({ where: { product: { id: product.id } } })
-      for (let image of images) {
-        await Image.remove(image)
-      }
-      for (let comment of comments) {
-        await Comment.remove(comment)
-      }
-
-      return { "deleted": id };
-    } catch (e) {
-      return e;
-    }
-  }
 }

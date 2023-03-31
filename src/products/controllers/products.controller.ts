@@ -33,10 +33,4 @@ export class ProductsController {
   update(@Body() updateProductDto: UpdateProductDto, @Param("id") id: number): Promise<Product> {
     return this.productsService.update(id, updateProductDto);
   }
-
-  @Roles(Role.Admin)
-  @Delete(":id")
-  remove(@Param("id") id: number) {
-    return this.productsService.remove(id);
-  }
 }
