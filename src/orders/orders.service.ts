@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
@@ -54,7 +54,7 @@ export class OrdersService {
       };
       return order;
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.NOT_FOUND);
     }
   }
 
@@ -63,7 +63,7 @@ export class OrdersService {
       if (Array.isArray(createOrderDto.orderRows)) {
         const canCreate = await this.checkProductsAvailability(createOrderDto)
         if (!canCreate.canCreate){
-          throw new Error(canCreate.message)
+          throw new HttpException(canCreate.message, HttpStatus.NOT_ACCEPTABLE);
         }
       }
 
@@ -72,22 +72,6 @@ export class OrdersService {
       await Order.save(newOrder);
 
       if (Array.isArray(createOrderDto.orderRows)) {
-        // for await (let row of createOrderDto.orderRows) {
-        //   const {qty, product} = row
-        //   const newRow: OrderRow = this.orderRowRepository.create({ qty, product: {id:product}, order: {id: newOrder.id} });
-        //   await OrderRow.save(newRow)
-        //   const productInstance = await this.productRepository.findOneOrFail({where: { id: newRow.product.id } });
-        //   newOrder.sum += qty * productInstance.price
-        //   // update product.buyersCount
-        //   if (newOrder.status === 'completed') {
-        //     productInstance.buyersCount += 1
-        //   }
-        //   productInstance.count -= qty
-        //   if (productInstance.count === 0) {
-        //     productInstance.isAvailable = false
-        //   }
-        //   await Product.save(productInstance)
-        // }
         await this.createOrderRows (createOrderDto.orderRows, newOrder)
       }
       await Order.save(newOrder);
@@ -132,7 +116,7 @@ export class OrdersService {
           if (!canCreate.canCreate){
             // if can't save new orderRows, return to old orderRows
             await this.createOrderRows (orderRows, order)
-            throw new Error(canCreate.message)
+            throw new HttpException(canCreate.message, HttpStatus.NOT_ACCEPTABLE);
           }
 
           for await (let row of updateOrderDto.orderRows) {
@@ -147,9 +131,7 @@ export class OrdersService {
               productInstance.buyersCount += 1
             }
             productInstance.count -= row.qty
-            if (productInstance.count < 0) {
-              throw new Error(`Not enough product ${productInstance.name} on warehouse`)
-            } else if (productInstance.count === 0) {
+            if (productInstance.count === 0) {
               productInstance.isAvailable = false
             }
           }
