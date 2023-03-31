@@ -4,7 +4,7 @@ import { Repository } from "typeorm";
 import { Product } from "../entities/product.entity";
 import { CreateProductDto } from "../dto/create-product.dto";
 import { UpdateProductDto } from "../dto/update-product.dto";
-import { Comment } from "../entities/comment.entity";
+import { Comment } from "../../comments/comment.entity";
 import { Image } from "../entities/image.entity";
 import { OrderRow } from "../../orders/entities/order-row.entity";
 

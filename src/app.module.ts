@@ -11,7 +11,7 @@ import { ProductsModule } from "./products/products.module";
 
 import { User } from "./users/entities/user.entity";
 import { Product } from "./products/entities/product.entity";
-import { Comment } from "./products/entities/comment.entity";
+import { Comment } from "./comments/comment.entity";
 import { Image } from "./products/entities/image.entity";
 import { Rating } from "./products/entities/rating.entity";
 import { Order } from "./orders/entities/order.entity";

@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Request, UseGuards } from "@nestjs/common";
-import { CommentsService } from "../services/comments.service";
-import { Comment } from "../entities/comment.entity";
-import { CreateCommentDto } from "../dto/create-comment.dto";
-import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
-import { UpdateCommentDto } from "../dto/update-comment.dto";
+import { CommentsService } from "./comments.service";
+import { Comment } from "./comment.entity";
+import { CreateCommentDto } from "./dto/create-comment.dto";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { UpdateCommentDto } from "./dto/update-comment.dto";
 
 
 @Controller("comments")
