@@ -149,12 +149,8 @@ export class OrdersService {
         order = await this.ordersRepository.findOneOrFail({ where: { id, user: { id: req.user.userId } } });
       }
 
-      const orderRows = await this.orderRowRepository.find({where: { order: { id: order.id } }, relations: ['product']});
-
-      await this.removeProductsFromRows(order, orderRows)
-
+      await this.orderRowService.deleteRows(order.id, order.status)
       await Order.remove(order)
-
       return { deleted: id };
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.BAD_REQUEST);

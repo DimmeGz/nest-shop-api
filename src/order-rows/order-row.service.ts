@@ -41,4 +41,21 @@ export class OrderRowService {
     }
     return orderSum
   }
+
+  async deleteRows(orderId: number, orderStatus: string) {
+    const orderRows = await this.orderRowRepository.find({where: { order: { id: orderId } }, relations: ['product']});
+    for await (let row of orderRows) {
+      // update product.buyersCount
+      const productInstance = await this.productRepository.findOneOrFail({where: { id: row.product.id } });
+      if (orderStatus === 'completed') {
+        productInstance.buyersCount -= 1
+      }
+      if (productInstance.count === 0) {
+        productInstance.isAvailable = true
+      }
+      productInstance.count += row.qty
+      await Product.save(productInstance)
+      await OrderRow.remove(row)
+    }
+  }
 }
