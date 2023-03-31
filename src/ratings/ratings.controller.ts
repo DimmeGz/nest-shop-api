@@ -11,11 +11,11 @@ import {
   Request,
   UseGuards
 } from "@nestjs/common";
-import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
-import { RatingsService } from "../services/ratings.service";
-import { Rating } from "../entities/rating.entity";
-import { CreateRatingDto } from "../dto/create-rating.dto";
-import { UpdateRatingDto } from "../dto/update-rating.dto";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { RatingsService } from "./ratings.service";
+import { Rating } from "./rating.entity";
+import { CreateRatingDto } from "./dto/create-rating.dto";
+import { UpdateRatingDto } from "./dto/update-rating.dto";
 
 
 @Controller("ratings")

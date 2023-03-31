@@ -2,10 +2,10 @@ import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
-import { Rating } from "../entities/rating.entity";
-import { CreateRatingDto } from "../dto/create-rating.dto";
-import { UpdateRatingDto } from "../dto/update-rating.dto";
-import { Product } from "../entities/product.entity";
+import { Rating } from "./rating.entity";
+import { CreateRatingDto } from "./dto/create-rating.dto";
+import { UpdateRatingDto } from "./dto/update-rating.dto";
+import { Product } from "../products/entities/product.entity";
 
 @Injectable()
 export class RatingsService {

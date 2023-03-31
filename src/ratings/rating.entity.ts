@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, ManyToOne } from "typeorm";
-import { Product } from "./product.entity";
-import { User } from "../../users/entities/user.entity";
+import { Product } from "../products/entities/product.entity";
+import { User } from "../users/entities/user.entity";
 
 @Entity()
 export class Rating extends BaseEntity {

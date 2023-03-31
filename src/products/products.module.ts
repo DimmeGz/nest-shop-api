@@ -10,28 +10,28 @@ import { Category } from "../categories/category.entity";
 import { Comment } from "../comments/comment.entity";
 import { Image } from "../images/image.entity";
 
-import { RatingsService } from "./services/ratings.service";
-import { RatingsController } from "./controllers/ratings.controller";
-import { Rating } from "./entities/rating.entity";
+import { RatingsService } from "../ratings/ratings.service";
+import { RatingsController } from "../ratings/ratings.controller";
+import { Rating } from "../ratings/rating.entity";
 import { OrderRow } from "../orders/entities/order-row.entity";
 
 import { CategoriesModule } from "../categories/categories.module";
 import { CommentsModule } from "../comments/comments.module";
 import { ImagesModule } from "../images/images.module";
+import { RatingsModule } from "../ratings/ratings.module";
 
 @Module({
   providers: [
     ProductsService,
-    RatingsService,
   ],
   controllers: [
     ProductsController,
-    RatingsController,
   ],
   imports: [
     CategoriesModule,
     CommentsModule,
     ImagesModule,
+    RatingsModule,
     TypeOrmModule
     .forFeature([
       Product,
