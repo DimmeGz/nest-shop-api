@@ -6,7 +6,7 @@ import { CreateProductDto } from "./dto/create-product.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
 import { Comment } from "../comments/comment.entity";
 import { Image } from "../images/image.entity";
-import { OrderRow } from "../orders/entities/order-row.entity";
+import { OrderRow } from "../order-rows/order-row.entity";
 
 
 @Injectable()

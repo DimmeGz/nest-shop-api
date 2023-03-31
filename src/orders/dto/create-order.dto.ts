@@ -1,9 +1,9 @@
 import { IsEnum } from "class-validator";
-import { StatusEnum } from "./enum/status.enum";
-import { OrderRow } from "../entities/order-row.entity";
+import { OrderStatusEnum } from "../enum/order-status.enum";
+import { OrderRow } from "../../order-rows/order-row.entity";
 
 export class CreateOrderDto {
-  @IsEnum(StatusEnum)
+  @IsEnum(OrderStatusEnum)
   readonly status: string
 
   readonly orderRows: OrderRow

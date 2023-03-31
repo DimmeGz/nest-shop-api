@@ -6,7 +6,7 @@ import { ProductsService } from "./products.service";
 import { ProductsController } from "./products.controller";
 
 import { User } from "../users/user.entity";
-import { OrderRow } from "../orders/entities/order-row.entity";
+import { OrderRow } from "../order-rows/order-row.entity";
 
 import { CategoriesModule } from "../categories/categories.module";
 import { CommentsModule } from "../comments/comments.module";

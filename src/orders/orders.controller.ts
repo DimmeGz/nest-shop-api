@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request, UseGuards } from "@nestjs/common";
 import { OrdersService } from "./orders.service";
-import { Order } from "./entities/order.entity";
+import { Order } from "./order.entity";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { CreateOrderDto } from "./dto/create-order.dto";
 import { UpdateOrderDto } from "./dto/update-order.dto";
