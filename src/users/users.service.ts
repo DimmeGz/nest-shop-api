@@ -21,9 +21,12 @@ export class UsersService {
     }
   }
 
-  async findOne(id: number): Promise<User> {
+  async findOne(req, id: number): Promise<User> {
     try {
-      return await this.userRepository.findOneByOrFail({ id });
+      if (req.user.role === 'admin') {
+        return await this.userRepository.findOneByOrFail({ id });
+      }
+      return await this.userRepository.findOneOrFail({ where: { id: +id === req.user.userId? id : req.user.userId } })
     } catch (e) {
       return e;
     }

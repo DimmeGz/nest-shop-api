@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Request, UseGuards } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { User } from "./entities/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { Roles } from "../auth/roles/roles.decorator";
 import { Role } from "../auth/roles/roles.enum";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 
 
 @Controller("users")
@@ -19,9 +20,9 @@ export class UsersController {
   }
 
   @Get(":id")
-  @Roles(Role.Admin, Role.Owner)
-  getOne(@Param("id") id: number): Promise<User> {
-      return this.userService.findOne(id);
+  @UseGuards(JwtAuthGuard)
+  getOne(@Request() req, @Param("id") id: number): Promise<User> {
+      return this.userService.findOne(req, id);
   }
 
   @Post()
