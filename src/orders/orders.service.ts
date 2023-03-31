@@ -65,12 +65,9 @@ export class OrdersService {
       const {status, orderRows } = createOrderDto
       await this.orderRowService.checkProductsAvailability(orderRows)
 
-      const newOrder: Order = this.ordersRepository.create({ status, user: {id: req.user.userId} });
-      await Order.save(newOrder);
+      const newOrder: Order = await this.ordersRepository.save({ status, user: {id: req.user.userId} });
 
-      if (Array.isArray(orderRows)) {
-        await this.createOrderRows (orderRows, newOrder)
-      }
+      newOrder.sum = await this.orderRowService.createOrderRowsAndCountSum(orderRows, newOrder.id, newOrder.status)
       return Order.save(newOrder);
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
