@@ -7,12 +7,14 @@ import { CreateOrderDto } from "./dto/create-order.dto";
 import { UpdateOrderDto } from "./dto/update-order.dto";
 import { OrderRow } from "../order-rows/order-row.entity";
 import { Product } from "../products/product.entity";
+import { OrderRowService } from "../order-rows/order-row.service";
 
 @Injectable()
 export class OrdersService {
   constructor(@InjectRepository(Order) private ordersRepository: Repository<Order>,
               @InjectRepository(OrderRow) private orderRowRepository: Repository<OrderRow>,
-              @InjectRepository(Product) private productRepository: Repository<Product>) {
+              @InjectRepository(Product) private productRepository: Repository<Product>,
+              private readonly orderRowService: OrderRowService) {
   }
   async findAll(req, query): Promise<any> {
     try {
@@ -61,12 +63,8 @@ export class OrdersService {
   async create(req, createOrderDto: CreateOrderDto) {
     try {
       const {status, orderRows } = createOrderDto
-      if (Array.isArray(orderRows)) {
-        const canCreate = await this.checkProductsAvailability(createOrderDto)
-        if (!canCreate.canCreate){
-          throw new HttpException(canCreate.message, HttpStatus.NOT_ACCEPTABLE);
-        }
-      }
+      await this.orderRowService.checkProductsAvailability(orderRows)
+
       const newOrder: Order = this.ordersRepository.create({ status, user: {id: req.user.userId} });
       await Order.save(newOrder);
 
