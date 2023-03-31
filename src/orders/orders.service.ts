@@ -60,32 +60,35 @@ export class OrdersService {
 
   async create(req, createOrderDto: CreateOrderDto) {
     try {
+      if (Array.isArray(createOrderDto.orderRows)) {
+        const canCreate = await this.checkProductsAvailability(createOrderDto)
+        if (!canCreate.canCreate){
+          throw new Error(canCreate.message)
+        }
+      }
+
       const {status} = createOrderDto
       const newOrder: Order = this.ordersRepository.create({ status, user: {id: req.user.userId} });
       await Order.save(newOrder);
 
       if (Array.isArray(createOrderDto.orderRows)) {
-        for await (let row of createOrderDto.orderRows) {
-          const {qty, product} = row
-          const newRow: OrderRow = this.orderRowRepository.create({ qty, product: {id:product}, order: {id: newOrder.id} });
-          await OrderRow.save(newRow)
-          const productInstance = await this.productRepository.findOneOrFail({where: { id: newRow.product.id } });
-          newOrder.sum += qty * productInstance.price
-          // update product.buyersCount
-          if (newOrder.status === 'completed') {
-            productInstance.buyersCount += 1
-          }
-          productInstance.count -= qty
-          if (productInstance.count < 0) {
-            throw new Error(`Not enough product ${productInstance.name} on warehouse`)
-          } else if (productInstance.count === 0) {
-            productInstance.isAvailable = false
-          }
-        }
-        for await (let row of createOrderDto.orderRows) {
-          const productInstance = await this.productRepository.findOneOrFail({ where: { id: row.product.id } });
-          await Product.save(productInstance)
-        }
+        // for await (let row of createOrderDto.orderRows) {
+        //   const {qty, product} = row
+        //   const newRow: OrderRow = this.orderRowRepository.create({ qty, product: {id:product}, order: {id: newOrder.id} });
+        //   await OrderRow.save(newRow)
+        //   const productInstance = await this.productRepository.findOneOrFail({where: { id: newRow.product.id } });
+        //   newOrder.sum += qty * productInstance.price
+        //   // update product.buyersCount
+        //   if (newOrder.status === 'completed') {
+        //     productInstance.buyersCount += 1
+        //   }
+        //   productInstance.count -= qty
+        //   if (productInstance.count === 0) {
+        //     productInstance.isAvailable = false
+        //   }
+        //   await Product.save(productInstance)
+        // }
+        await this.createOrderRows (createOrderDto.orderRows, newOrder)
       }
       await Order.save(newOrder);
 
@@ -118,13 +121,20 @@ export class OrdersService {
 
       } else {
         // delete old rows
-        const orderRows = await this.orderRowRepository.find({where: { order: { id: id } }});
+        const orderRows = await this.orderRowRepository.find({where: { order: { id: id } }, relations: ['product']});
         await this.removeProductsFromRows(order, orderRows)
         order.sum = 0
         order.orderRows = []
 
         // create new rows
         if (Array.isArray(updateOrderDto.orderRows)) {
+          const canCreate = await this.checkProductsAvailability(updateOrderDto)
+          if (!canCreate.canCreate){
+            // if can't save new orderRows, return to old orderRows
+            await this.createOrderRows (orderRows, order)
+            throw new Error(canCreate.message)
+          }
+
           for await (let row of updateOrderDto.orderRows) {
             const {qty, product} = row
             const newRow: OrderRow = this.orderRowRepository.create({ qty, product: {id:product}, order: {id: id} });
@@ -165,7 +175,7 @@ export class OrdersService {
         order = await this.ordersRepository.findOneOrFail({ where: { id, user: { id: req.user.userId } } });
       }
 
-      const orderRows = await this.orderRowRepository.find({where: { order: { id: order.id } }});
+      const orderRows = await this.orderRowRepository.find({where: { order: { id: order.id } }, relations: ['product']});
 
       await this.removeProductsFromRows(order, orderRows)
 
@@ -177,9 +187,32 @@ export class OrdersService {
     }
   }
 
+  async createOrderRows (rows, newOrder) {
+    for await (let row of rows) {
+      const {qty} = row
+      let {product} = row
+      if (product.id) {
+        product = product.id
+      }
+
+      const newRow: OrderRow = this.orderRowRepository.create({ qty, product: {id:product}, order: {id: newOrder.id} });
+      await OrderRow.save(newRow)
+      const productInstance = await this.productRepository.findOneOrFail({where: { id: newRow.product.id } });
+      newOrder.sum += qty * productInstance.price
+      // update product.buyersCount
+      if (newOrder.status === 'completed') {
+        productInstance.buyersCount += 1
+      }
+      productInstance.count -= qty
+      if (productInstance.count === 0) {
+        productInstance.isAvailable = false
+      }
+      await Product.save(productInstance)
+    }
+  }
+
   async removeProductsFromRows(order, orderRows) {
     for await (let row of orderRows) {
-      await OrderRow.remove(row)
       // update product.buyersCount
       const productInstance = await this.productRepository.findOneOrFail({where: { id: row.product.id } });
       if (order.status === 'completed') {
@@ -190,6 +223,20 @@ export class OrdersService {
       }
       productInstance.count += row.qty
       await Product.save(productInstance)
+      await OrderRow.remove(row)
+    }
+  }
+
+  async checkProductsAvailability (orderDto): Promise<any> {
+    for await (let row of orderDto.orderRows) {
+      const productInstance = await this.productRepository.findOneOrFail({ where: { id: row.product } });
+      if (!productInstance.isAvailable) {
+        return {canCreate: false, message: `Product ${productInstance.name} is not available`}
+      }
+      if (productInstance.count < row.qty) {
+        return {canCreate: false, message: `Not enough product ${productInstance.name} on warehouse`}
+      }
+      return {canCreate: true}
     }
   }
 }
