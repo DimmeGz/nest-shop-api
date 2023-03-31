@@ -1,10 +1,10 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
-import { Roles } from "../../auth/roles/roles.decorator";
-import { Role } from "../../auth/roles/roles.enum";
-import { ImagesService } from "../services/images.service";
-import { Image } from "../entities/image.entity";
-import { CreateImageDto } from "../dto/create-image.dto";
-import { UpdateImageDto } from "../dto/update-image.dto";
+import { Roles } from "../auth/roles/roles.decorator";
+import { Role } from "../auth/roles/roles.enum";
+import { ImagesService } from "./images.service";
+import { Image } from "./image.entity";
+import { CreateImageDto } from "./dto/create-image.dto";
+import { UpdateImageDto } from "./dto/update-image.dto";
 
 
 @Controller("images")
