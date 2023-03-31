@@ -59,6 +59,14 @@ export class OrdersService {
             productInstance.buyersCount += 1
           }
           productInstance.count -= qty
+          if (productInstance.count < 0) {
+            throw new Error(`Not enough product ${productInstance.name} on warehouse`)
+          } else if (productInstance.count === 0) {
+            productInstance.isAvailable = false
+          }
+        }
+        for await (let row of createOrderDto.orderRows) {
+          const productInstance = await this.productRepository.findOneOrFail({ where: { id: row.product.id } });
           await Product.save(productInstance)
         }
       }
@@ -112,6 +120,14 @@ export class OrdersService {
               productInstance.buyersCount += 1
             }
             productInstance.count -= row.qty
+            if (productInstance.count < 0) {
+              throw new Error(`Not enough product ${productInstance.name} on warehouse`)
+            } else if (productInstance.count === 0) {
+              productInstance.isAvailable = false
+            }
+          }
+          for await (let row of updateOrderDto.orderRows) {
+            const productInstance = await this.productRepository.findOneOrFail({ where: { id: row.product.id } });
             await Product.save(productInstance)
           }
         }
@@ -151,6 +167,9 @@ export class OrdersService {
       const productInstance = await this.productRepository.findOneOrFail({where: { id: row.product.id } });
       if (order.status === 'completed') {
         productInstance.buyersCount -= 1
+      }
+      if (productInstance.count === 0) {
+        productInstance.isAvailable = true
       }
       productInstance.count += row.qty
       await Product.save(productInstance)
