@@ -3,7 +3,7 @@ import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { UsersService } from "./users.service";
 import { UsersController } from "./users.controller";
-import { User } from "./entities/user.entity";
+import { User } from "./user.entity";
 import { UserExistsRule } from "../middleware/unique.validator";
 
 @Module({
@@ -13,7 +13,7 @@ import { UserExistsRule } from "../middleware/unique.validator";
     ],
   controllers: [UsersController],
   imports: [TypeOrmModule.forFeature([User])],
-  exports: [UsersService],
+  exports: [UsersService, TypeOrmModule],
 })
 export class UsersModule {
 }

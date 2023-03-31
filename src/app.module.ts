@@ -9,7 +9,7 @@ import { RolesGuard } from "./auth/roles/roles.guard";
 import { AuthModule } from "./auth/auth.module";
 import { ProductsModule } from "./products/products.module";
 
-import { User } from "./users/entities/user.entity";
+import { User } from "./users/user.entity";
 import { Product } from "./products/product.entity";
 import { Order } from "./orders/entities/order.entity";
 import { OrdersModule } from "./orders/orders.module";

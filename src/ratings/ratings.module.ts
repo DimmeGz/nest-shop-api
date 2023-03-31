@@ -4,7 +4,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { RatingsService } from "./ratings.service";
 import { RatingsController } from "./ratings.controller";
 import { Rating } from "./rating.entity";
-import { User } from "../users/entities/user.entity";
+import { User } from "../users/user.entity";
 import { Product } from "../products/product.entity";
 
 @Module({

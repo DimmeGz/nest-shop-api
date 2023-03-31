@@ -5,7 +5,7 @@ import { Product } from "./product.entity";
 import { ProductsService } from "./products.service";
 import { ProductsController } from "./products.controller";
 
-import { User } from "../users/entities/user.entity";
+import { User } from "../users/user.entity";
 import { OrderRow } from "../orders/entities/order-row.entity";
 
 import { CategoriesModule } from "../categories/categories.module";
