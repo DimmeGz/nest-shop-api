@@ -36,6 +36,9 @@ export class ProductsService {
   async create(createProductDto: CreateProductDto) {
     try {
       const newProduct: Product = this.productRepository.create(createProductDto);
+      if (newProduct.count === 0) {
+        newProduct.isAvailable = false
+      }
       await Product.save(newProduct);
       return await this.productRepository.findOneOrFail({ where: { id: newProduct.id }, relations: ["category"] });
     } catch (e) {
@@ -45,8 +48,14 @@ export class ProductsService {
 
   async update(id: number, updateProductDto: UpdateProductDto) {
     try {
-      await this.productRepository.update({ id }, updateProductDto);
-      return await this.productRepository.findOneOrFail({ where: { id }, relations: ["category"] });
+      const product = await this.productRepository.findOneOrFail({ where: { id }, relations: ["category"]  } )
+      Object.assign(product, updateProductDto)
+      if (product.count === 0) {
+        product.isAvailable = false
+      }
+      await product.save()
+
+      return product
     } catch (e) {
       return e;
     }
