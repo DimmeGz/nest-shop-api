@@ -11,9 +11,6 @@ import { ProductsModule } from "./products/products.module";
 
 import { User } from "./users/entities/user.entity";
 import { Product } from "./products/product.entity";
-import { Comment } from "./comments/comment.entity";
-import { Image } from "./images/image.entity";
-import { Rating } from "./ratings/rating.entity";
 import { Order } from "./orders/entities/order.entity";
 import { OrdersModule } from "./orders/orders.module";
 import { OrderRow } from "./orders/entities/order-row.entity";
@@ -29,9 +26,6 @@ import { Category } from "./categories/category.entity";
         User,
         Category,
         Product,
-        Comment,
-        Image,
-        Rating,
         Order,
         OrderRow,
       ],

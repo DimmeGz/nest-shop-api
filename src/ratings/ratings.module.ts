@@ -11,7 +11,7 @@ import { Product } from "../products/product.entity";
   providers: [RatingsService],
   controllers: [RatingsController],
   imports: [TypeOrmModule.forFeature([Rating, User, Product])],
-  exports: [RatingsService],
+  exports: [RatingsService, TypeOrmModule],
 })
 export class RatingsModule {
 }

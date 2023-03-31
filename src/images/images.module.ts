@@ -9,7 +9,7 @@ import { Image } from "./image.entity";
   providers: [ImagesService],
   controllers: [ImagesController],
   imports: [TypeOrmModule.forFeature([Image])],
-  exports: [ImagesService],
+  exports: [ImagesService, TypeOrmModule],
 })
 export class ImagesModule {
 }

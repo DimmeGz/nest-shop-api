@@ -12,7 +12,7 @@ import { Product } from "../products/product.entity";
   ],
   controllers: [CategoriesController],
   imports: [TypeOrmModule.forFeature([Category, Product])],
-  exports: [CategoriesService],
+  exports: [CategoriesService, TypeOrmModule],
 })
 export class CategoriesModule {
 }
