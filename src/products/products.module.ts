@@ -21,6 +21,7 @@ import { ImagesController } from "./controllers/images.controller";
 import { RatingsService } from "./services/ratings.service";
 import { RatingsController } from "./controllers/ratings.controller";
 import { Rating } from "./entities/rating.entity";
+import { OrderRow } from "../orders/entities/order-row.entity";
 
 @Module({
   providers: [
@@ -45,6 +46,7 @@ import { Rating } from "./entities/rating.entity";
       User,
       Image,
       Rating,
+      OrderRow
     ])],
   exports: [ProductsService]
 })
