@@ -39,7 +39,7 @@ export class OrdersService {
         data: result
       }
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -78,7 +78,7 @@ export class OrdersService {
 
       return newOrder;
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -144,7 +144,7 @@ export class OrdersService {
       await Order.save(order)
       return order
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -165,7 +165,7 @@ export class OrdersService {
 
       return { deleted: id };
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
   }
 

@@ -16,7 +16,7 @@ export class RatingsService {
     try {
       return await this.ratingRepository.find();
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -49,7 +49,7 @@ export class RatingsService {
       return newRating;
 
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -121,7 +121,7 @@ export class RatingsService {
       }
       return false
     } catch (e) {
-      return e
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
   }
 }

@@ -15,7 +15,7 @@ export class ImagesService {
     try {
       return await this.imageRepository.find();
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -36,7 +36,7 @@ export class ImagesService {
 
       return newImage;
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -45,7 +45,7 @@ export class ImagesService {
       await this.imageRepository.update({ id }, updateImageDto);
       return await this.imageRepository.findOneByOrFail({ id });
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -54,7 +54,7 @@ export class ImagesService {
       const result = await this.imageRepository.delete(id);
       return result;
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
   }
 }

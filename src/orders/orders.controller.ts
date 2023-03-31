@@ -31,7 +31,7 @@ export class OrdersController {
 
   @UseGuards(JwtAuthGuard)
   @Patch(":id")
-  update(@Request() req, @Body() updateOrderDto: UpdateOrderDto, @Param("id") id: number): Promise<Comment> {
+  update(@Request() req, @Body() updateOrderDto: UpdateOrderDto, @Param("id") id: number): Promise<any> {
     return this.ordersService.update(req, id, updateOrderDto);
   }
 

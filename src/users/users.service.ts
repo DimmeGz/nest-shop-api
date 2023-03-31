@@ -17,7 +17,7 @@ export class UsersService {
     try {
       return await this.userRepository.find();
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -28,7 +28,7 @@ export class UsersService {
       }
       return await this.userRepository.findOneOrFail({ where: { id: +id === req.user.userId? id : req.user.userId } })
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -45,7 +45,7 @@ export class UsersService {
 
       return token;
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -57,7 +57,7 @@ export class UsersService {
       await this.userRepository.update({ id }, updateUserDto);
       return await this.userRepository.findOneByOrFail({ id });
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -66,7 +66,7 @@ export class UsersService {
       const result = await this.userRepository.delete(id);
       return result;
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
   }
 

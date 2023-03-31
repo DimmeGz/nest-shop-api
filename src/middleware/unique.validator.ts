@@ -22,7 +22,6 @@ export class UserExistsRule implements ValidatorConstraintInterface {
     } catch (e) {
       return false;
     }
-    return false;
   }
 
   defaultMessage(args: ValidationArguments) {

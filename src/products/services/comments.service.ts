@@ -15,7 +15,7 @@ export class CommentsService {
     try {
       return await this.commentRepository.find();
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -37,7 +37,7 @@ export class CommentsService {
       return newComment;
 
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -69,7 +69,7 @@ export class CommentsService {
       }
       throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
   }
 }

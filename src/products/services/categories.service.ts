@@ -16,7 +16,7 @@ export class CategoriesService {
     try {
       return await this.categoryRepository.find();
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -37,7 +37,7 @@ export class CategoriesService {
 
       return newCategory;
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -46,7 +46,7 @@ export class CategoriesService {
       await this.categoryRepository.update({ id }, updateCategoryDto);
       return await this.categoryRepository.findOneByOrFail({ id });
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -55,7 +55,7 @@ export class CategoriesService {
       const result = await this.categoryRepository.delete(id);
       return result;
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
   }
 }

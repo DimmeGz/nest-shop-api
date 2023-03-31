@@ -51,7 +51,7 @@ export class ProductsService {
       await Product.save(newProduct);
       return await this.productRepository.findOneOrFail({ where: { id: newProduct.id }, relations: ["category"] });
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -66,7 +66,7 @@ export class ProductsService {
 
       return product
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
   }
 }
