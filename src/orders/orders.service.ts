@@ -17,26 +17,26 @@ export class OrdersService {
   async findAll(req, query): Promise<any> {
     try {
       const take = query.take || 10
-      const skip = query.skip || 0
+      const page = query.page || 1
+      const skip = (page - 1) * query.take || 0
+      let result, total
       if (req.user.role === 'admin') {
-        const [result, total] = await this.ordersRepository.findAndCount({
+        [result, total] = await this.ordersRepository.findAndCount({
           relations: ["user", "orderRows", "orderRows.product"],
           take: take,
           skip: skip});
-        return {
-          data: result,
-          count: total
-        }
       } else {
-        const [result, total] = await this.ordersRepository.findAndCount({
+        [result, total] = await this.ordersRepository.findAndCount({
           where: {user: { id: req.user.userId }},
           relations: ["user", "orderRows", "orderRows.product"],
           take: take,
           skip: skip});
-        return {
-          data: result,
-          count: total
-        }
+      }
+      return {
+        page: page,
+        totalPages: Math.ceil(total / take),
+        elementsCount: total,
+        data: result
       }
     } catch (e) {
       return e;

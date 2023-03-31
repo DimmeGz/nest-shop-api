@@ -20,11 +20,14 @@ export class ProductsService {
   async findAll(query): Promise<any> {
     try {
       const take = query.take || 10
-      const skip = query.skip || 0
+      const page = query.page || 1
+      const skip = (page - 1) * query.take || 0
       const [result, total] = await this.productRepository.findAndCount({take: take, skip: skip});
       return {
-        data: result,
-        count: total
+        page: page,
+        totalPages: Math.ceil(total / take),
+        elementsCount: total,
+        data: result
       }
     } catch (e) {
       return e;
