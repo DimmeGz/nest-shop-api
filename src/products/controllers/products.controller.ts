@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch, Post, Query } from "@nestjs/common";
 import { ProductsService } from "../services/products.service";
 import { Product } from "../entities/product.entity";
 import { CreateProductDto } from "../dto/create-product.dto";
@@ -7,14 +7,15 @@ import { Role } from "../../auth/roles/roles.enum";
 import { UpdateProductDto } from "../dto/update-product.dto";
 
 
+
 @Controller("products")
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {
   }
 
   @Get()
-  getAll(): Promise<Product[]> {
-    return this.productsService.findAll();
+  getAll(@Query() query): Promise<Product[]> {
+    return this.productsService.findAll(query);
   }
 
   @Get(":id")

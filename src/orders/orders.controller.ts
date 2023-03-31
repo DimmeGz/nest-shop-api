@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Request, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request, UseGuards } from "@nestjs/common";
 import { OrdersService } from "./orders.service";
 import { Order } from "./entities/order.entity";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
@@ -13,8 +13,8 @@ export class OrdersController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  getAll(@Request() req): Promise<Order[]> {
-    return this.ordersService.findAll(req);
+  getAll(@Request() req, @Query() query): Promise<Order[]> {
+    return this.ordersService.findAll(req, query);
   }
 
   @Get(":id")

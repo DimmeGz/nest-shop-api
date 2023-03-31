@@ -17,9 +17,15 @@ export class ProductsService {
               @InjectRepository(Image) private imageRepository: Repository<Image>) {
   }
 
-  async findAll(): Promise<Product[]> {
+  async findAll(query): Promise<any> {
     try {
-      return await this.productRepository.find();
+      const take = query.take || 10
+      const skip = query.skip || 0
+      const [result, total] = await this.productRepository.findAndCount({take: take, skip: skip});
+      return {
+        data: result,
+        count: total
+      }
     } catch (e) {
       return e;
     }

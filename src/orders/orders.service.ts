@@ -14,12 +14,29 @@ export class OrdersService {
               @InjectRepository(OrderRow) private orderRowRepository: Repository<OrderRow>,
               @InjectRepository(Product) private productRepository: Repository<Product>) {
   }
-  async findAll(req): Promise<Order[]> {
+  async findAll(req, query): Promise<any> {
     try {
+      const take = query.take || 10
+      const skip = query.skip || 0
       if (req.user.role === 'admin') {
-        return await this.ordersRepository.find( { relations: ["user", "orderRows", "orderRows.product"] })
+        const [result, total] = await this.ordersRepository.findAndCount({
+          relations: ["user", "orderRows", "orderRows.product"],
+          take: take,
+          skip: skip});
+        return {
+          data: result,
+          count: total
+        }
       } else {
-        return await this.ordersRepository.find({where: {user: { id: req.user.userId }}, relations: ["user", "orderRows", "orderRows.product"]})
+        const [result, total] = await this.ordersRepository.findAndCount({
+          where: {user: { id: req.user.userId }},
+          relations: ["user", "orderRows", "orderRows.product"],
+          take: take,
+          skip: skip});
+        return {
+          data: result,
+          count: total
+        }
       }
     } catch (e) {
       return e;
