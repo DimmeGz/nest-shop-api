@@ -74,9 +74,7 @@ export class OrdersService {
       if (Array.isArray(orderRows)) {
         await this.createOrderRows (orderRows, newOrder)
       }
-      await Order.save(newOrder);
-
-      return newOrder;
+      return Order.save(newOrder);
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }

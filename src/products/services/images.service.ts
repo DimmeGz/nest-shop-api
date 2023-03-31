@@ -32,9 +32,7 @@ export class ImagesService {
       const { imageUrl, productId } = createImageDto;
 
       const newImage: Image = this.imageRepository.create({ imageUrl, product: { id: productId } });
-      await Image.save(newImage);
-
-      return newImage;
+      return Image.save(newImage);
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }

@@ -44,10 +44,7 @@ export class RatingsService {
       }
       await product.save()
 
-      await Rating.save(newRating);
-
-      return newRating;
-
+      return Rating.save(newRating);
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
@@ -72,8 +69,7 @@ export class RatingsService {
       await product.save()
 
       Object.assign(rating, updateRatingDto)
-      await rating.save()
-      return rating
+      return await Rating.save(rating)
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.FORBIDDEN);
     }

@@ -44,7 +44,7 @@ export class RatingsController {
 
   @UseGuards(JwtAuthGuard)
   @Patch(":id")
-  update(@Request() req, @Body() updateRatingDto: UpdateRatingDto, @Param("id") id: number): Promise<Rating> {
+  update(@Request() req, @Body() updateRatingDto: UpdateRatingDto, @Param("id") id: number): Promise<any> {
     return this.ratingsService.update(req, id, updateRatingDto);
   }
 

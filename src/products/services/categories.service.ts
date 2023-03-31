@@ -33,9 +33,7 @@ export class CategoriesService {
   async create(createCategoryDto: CreateCategoryDto) {
     try {
       const newCategory: Category = this.categoryRepository.create(createCategoryDto);
-      await Category.save(newCategory);
-
-      return newCategory;
+      return Category.save(newCategory);
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }

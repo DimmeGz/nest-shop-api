@@ -32,10 +32,7 @@ export class CommentsService {
       const {text, productId} = createCommentDto
 
       const newComment: Comment = this.commentRepository.create({ text, product: {id: productId}, user: {id: req.user.userId} });
-      await Comment.save(newComment);
-
-      return newComment;
-
+      return Comment.save(newComment);
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
@@ -49,8 +46,7 @@ export class CommentsService {
       };
       const comment = await this.commentRepository.findOneOrFail({where: { id, user: { id: req.user.userId } }, relations: ['user', 'product'] });
       Object.assign(comment, updateCommentDto)
-      await comment.save()
-      return comment
+      return comment.save()
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.FORBIDDEN);
     }

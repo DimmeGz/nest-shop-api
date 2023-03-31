@@ -48,8 +48,7 @@ export class ProductsService {
       if (newProduct.count === 0) {
         newProduct.isAvailable = false
       }
-      await Product.save(newProduct);
-      return await this.productRepository.findOneOrFail({ where: { id: newProduct.id }, relations: ["category"] });
+      return Product.save(newProduct);
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
@@ -62,9 +61,7 @@ export class ProductsService {
       if (product.count === 0) {
         product.isAvailable = false
       }
-      await product.save()
-
-      return product
+      return product.save()
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
