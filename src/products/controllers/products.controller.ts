@@ -25,7 +25,7 @@ export class ProductsController {
 
   @Roles(Role.Admin)
   @Post()
-  create(@Body() createProductDto: CreateProductDto): Promise<string> {
+  create(@Body() createProductDto: CreateProductDto): Promise<any> {
     return this.productsService.create(createProductDto);
   }
 

@@ -7,6 +7,7 @@ import { CreateOrderDto } from "./dto/create-order.dto";
 import { UpdateOrderDto } from "./dto/update-order.dto";
 import { OrderRow } from "./entities/order-row.entity";
 import { Product } from "../products/entities/product.entity";
+import { rootLogger } from "ts-jest";
 
 @Injectable()
 export class OrdersService {
@@ -60,19 +61,18 @@ export class OrdersService {
 
   async create(req, createOrderDto: CreateOrderDto) {
     try {
-      if (Array.isArray(createOrderDto.orderRows)) {
+      const {status, orderRows } = createOrderDto
+      if (Array.isArray(orderRows)) {
         const canCreate = await this.checkProductsAvailability(createOrderDto)
         if (!canCreate.canCreate){
           throw new HttpException(canCreate.message, HttpStatus.NOT_ACCEPTABLE);
         }
       }
-
-      const {status} = createOrderDto
       const newOrder: Order = this.ordersRepository.create({ status, user: {id: req.user.userId} });
       await Order.save(newOrder);
 
-      if (Array.isArray(createOrderDto.orderRows)) {
-        await this.createOrderRows (createOrderDto.orderRows, newOrder)
+      if (Array.isArray(orderRows)) {
+        await this.createOrderRows (orderRows, newOrder)
       }
       await Order.save(newOrder);
 
@@ -87,7 +87,7 @@ export class OrdersService {
       const order = await this.findOne(req, id)
       if (!updateOrderDto.orderRows) {
         // update product.buyersCount
-        if (updateOrderDto.status && order.status !== updateOrderDto.status && (updateOrderDto.status === 'completed' || order.status === 'completed')) {
+        if (order.status !== updateOrderDto.status && [updateOrderDto.status, order.status].includes('completed')) {
           const orderRows = await this.orderRowRepository.find({where: { order: { id: id } }, relations: ['product']});
           for await (let row of orderRows) {
             const productInstance = await this.productRepository.findOneOrFail({where: { id: row.product.id } });
