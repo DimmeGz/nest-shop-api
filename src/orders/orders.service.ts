@@ -14,9 +14,13 @@ export class OrdersService {
               @InjectRepository(OrderRow) private orderRowRepository: Repository<OrderRow>,
               @InjectRepository(Product) private productRepository: Repository<Product>) {
   }
-  async findAll(): Promise<Order[]> {
+  async findAll(req): Promise<Order[]> {
     try {
-      return await this.ordersRepository.find();
+      if (req.user.role === 'admin') {
+        return await this.ordersRepository.find( { relations: ["user", "orderRows", "orderRows.product"] })
+      } else {
+        return await this.ordersRepository.find({where: {user: { id: req.user.userId }}, relations: ["user", "orderRows", "orderRows.product"]})
+      }
     } catch (e) {
       return e;
     }

@@ -12,8 +12,9 @@ export class OrdersController {
   }
 
   @Get()
-  getAll(): Promise<Order[]> {
-    return this.ordersService.findAll();
+  @UseGuards(JwtAuthGuard)
+  getAll(@Request() req): Promise<Order[]> {
+    return this.ordersService.findAll(req);
   }
 
   @Get(":id")
