@@ -15,7 +15,7 @@ import { OrderRowModule } from "../order-rows/order-row.module";
   controllers: [OrdersController],
   imports: [
     OrderRowModule,
-    TypeOrmModule.forFeature([Order, Product])
+    TypeOrmModule.forFeature([Order])
   ],
   exports: [OrdersService],
 })
