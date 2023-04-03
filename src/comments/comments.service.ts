@@ -40,10 +40,6 @@ export class CommentsService {
 
   async update(req, id: number, updateCommentDto: UpdateCommentDto) {
     try {
-      if (req.user.role === 'admin') {
-        await this.commentRepository.update({ id }, updateCommentDto);
-        return await this.commentRepository.findOneOrFail({where: { id }, relations: ['user', 'product'] });
-      };
       const comment = await this.commentRepository.findOneOrFail({where: { id, user: { id: req.user.userId } }, relations: ['user', 'product'] });
       Object.assign(comment, updateCommentDto)
       return comment.save()
@@ -54,12 +50,7 @@ export class CommentsService {
 
   async remove(req, id: number) {
     try {
-      let result
-      if (req.user.role === 'admin') {
-        result = await this.commentRepository.delete(id);
-      } else {
-        result = await this.commentRepository.delete({ id, user: { id: req.user.userId } });
-      }
+      const result = await this.commentRepository.delete({ id, user: { id: req.user.userId } });
       if (result.affected) {
         return result;
       }
