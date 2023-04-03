@@ -3,14 +3,13 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { OrderRow } from "./order-row.entity";
 import { OrderRowService } from "./order-row.service";
-import { Product } from "../products/product.entity";
 import { ProductsModule } from "src/products/products.module";
 
 @Module({
   providers: [OrderRowService],
   controllers: [],
   imports: [
-    TypeOrmModule.forFeature([OrderRow, Product]), 
+    TypeOrmModule.forFeature([OrderRow]), 
     ProductsModule
   ],
   exports: [TypeOrmModule, OrderRowService],
