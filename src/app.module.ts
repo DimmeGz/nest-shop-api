@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { APP_GUARD } from "@nestjs/core";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { DataSource } from 'typeorm';
 import { ConfigModule } from "@nestjs/config";
 import { UsersModule } from "./users/users.module";
 
@@ -8,13 +9,8 @@ import { RolesGuard } from "./auth/roles/roles.guard";
 
 import { AuthModule } from "./auth/auth.module";
 import { ProductsModule } from "./products/products.module";
-
-import { User } from "./users/user.entity";
-import { Product } from "./products/product.entity";
-import { Order } from "./orders/order.entity";
 import { OrdersModule } from "./orders/orders.module";
-import { OrderRow } from "./order-rows/order-row.entity";
-import { Category } from "./categories/category.entity";
+import { ImagesModule } from "./images/images.module";
 
 @Module({
   imports: [
@@ -22,19 +18,14 @@ import { Category } from "./categories/category.entity";
     TypeOrmModule.forRoot({
       type: "sqlite",
       database: "db.sqlite",
-      entities: [
-        User,
-        Category,
-        Product,
-        Order,
-        OrderRow,
-      ],
+      autoLoadEntities: true,
       synchronize: true
     }),
     UsersModule,
     AuthModule,
     ProductsModule,
     OrdersModule,
+    ImagesModule,
   ],
   controllers: [],
   providers: [
@@ -45,4 +36,5 @@ import { Category } from "./categories/category.entity";
   ]
 })
 export class AppModule {
+  constructor(private dataSource: DataSource) {}
 }

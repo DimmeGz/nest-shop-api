@@ -7,14 +7,12 @@ import { UpdateProductDto } from "./dto/update-product.dto";
 import { Comment } from "../comments/comment.entity";
 import { Image } from "../images/image.entity";
 import { OrderRow } from "../order-rows/order-row.entity";
+import { OrderRowService } from "src/order-rows/order-row.service";
 
 
 @Injectable()
 export class ProductsService {
-  constructor(@InjectRepository(Product) private productRepository: Repository<Product>,
-              @InjectRepository(OrderRow) private orderRowRepository: Repository<OrderRow>,
-              @InjectRepository(Comment) private commentRepository: Repository<Comment>,
-              @InjectRepository(Image) private imageRepository: Repository<Image>) {
+  constructor(@InjectRepository(Product) private productRepository: Repository<Product>) {
   }
 
   async findAll(query): Promise<any> {

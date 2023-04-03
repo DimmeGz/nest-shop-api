@@ -15,6 +15,8 @@ export class ImagesService {
     try {
       return await this.imageRepository.find();
     } catch (e) {
+      console.log(e);
+      
       throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
   }
