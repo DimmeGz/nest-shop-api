@@ -80,18 +80,7 @@ export class OrdersService {
       if (!updateOrderDto.orderRows) {
         // update product.buyersCount
         if (order.status !== updateOrderDto.status && [updateOrderDto.status, order.status].includes('completed')) {
-          const orderRows = await this.orderRowRepository.find({where: { order: { id: id } }, relations: ['product']});
-          for await (let row of orderRows) {
-            const productInstance = await this.productRepository.findOneOrFail({where: { id: row.product.id } });
-            if (order.status === 'completed') {
-              productInstance.buyersCount -= 1
-              await Product.save(productInstance)
-            }
-            if (updateOrderDto.status === 'completed') {
-              productInstance.buyersCount += 1
-              await Product.save(productInstance)
-            }
-          }
+          await this.orderRowService.updateProductBuyerCount(order.id, order.status, updateOrderDto.status)
         }
         Object.assign(order, updateOrderDto)
 

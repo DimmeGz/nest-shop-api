@@ -58,4 +58,19 @@ export class OrderRowService {
       await OrderRow.remove(row)
     }
   }
+
+  async updateProductBuyerCount (orderId: number, oldStatus: string, newStatus: string) {
+    const orderRows = await this.orderRowRepository.find({where: { order: { id: orderId } }, relations: ['product']});
+    for await (let row of orderRows) {
+      const productInstance = await this.productRepository.findOneOrFail({where: { id: row.product.id } });
+      if (oldStatus === 'completed') {
+        productInstance.buyersCount -= 1
+        await Product.save(productInstance)
+      }
+      if (newStatus === 'completed') {
+        productInstance.buyersCount += 1
+        await Product.save(productInstance)
+      }
+    }
+  }
 }
