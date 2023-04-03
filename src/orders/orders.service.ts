@@ -5,15 +5,11 @@ import { Repository } from "typeorm";
 import { Order } from "./order.entity";
 import { CreateOrderDto } from "./dto/create-order.dto";
 import { UpdateOrderDto } from "./dto/update-order.dto";
-import { OrderRow } from "../order-rows/order-row.entity";
-import { Product } from "../products/product.entity";
 import { OrderRowService } from "../order-rows/order-row.service";
 
 @Injectable()
 export class OrdersService {
   constructor(@InjectRepository(Order) private ordersRepository: Repository<Order>,
-              @InjectRepository(OrderRow) private orderRowRepository: Repository<OrderRow>,
-              @InjectRepository(Product) private productRepository: Repository<Product>,
               private readonly orderRowService: OrderRowService) {
   }
   async findAll(req, query): Promise<any> {
@@ -109,59 +105,6 @@ export class OrdersService {
       return { deleted: id };
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
-    }
-  }
-
-  async createOrderRows (rows, newOrder) {
-    for await (let row of rows) {
-      const {qty} = row
-      let {product} = row
-      if (product.id) {
-        product = product.id
-      }
-
-      const newRow: OrderRow = this.orderRowRepository.create({ qty, product: {id:product}, order: {id: newOrder.id} });
-      await OrderRow.save(newRow)
-      const productInstance = await this.productRepository.findOneOrFail({where: { id: newRow.product.id } });
-      newOrder.sum += qty * productInstance.price
-      // update product.buyersCount
-      if (newOrder.status === 'completed') {
-        productInstance.buyersCount += 1
-      }
-      productInstance.count -= qty
-      if (productInstance.count === 0) {
-        productInstance.isAvailable = false
-      }
-      await Product.save(productInstance)
-    }
-  }
-
-  async removeProductsFromRows(order, orderRows) {
-    for await (let row of orderRows) {
-      // update product.buyersCount
-      const productInstance = await this.productRepository.findOneOrFail({where: { id: row.product.id } });
-      if (order.status === 'completed') {
-        productInstance.buyersCount -= 1
-      }
-      if (productInstance.count === 0) {
-        productInstance.isAvailable = true
-      }
-      productInstance.count += row.qty
-      await Product.save(productInstance)
-      await OrderRow.remove(row)
-    }
-  }
-
-  async checkProductsAvailability (orderDto): Promise<any> {
-    for await (let row of orderDto.orderRows) {
-      const productInstance = await this.productRepository.findOneOrFail({ where: { id: row.product } });
-      if (!productInstance.isAvailable) {
-        return {canCreate: false, message: `Product ${productInstance.name} is not available`}
-      }
-      if (productInstance.count < row.qty) {
-        return {canCreate: false, message: `Not enough product ${productInstance.name} on warehouse`}
-      }
-      return {canCreate: true}
     }
   }
 }
