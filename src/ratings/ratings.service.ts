@@ -5,12 +5,12 @@ import { Repository } from "typeorm";
 import { Rating } from "./rating.entity";
 import { CreateRatingDto } from "./dto/create-rating.dto";
 import { UpdateRatingDto } from "./dto/update-rating.dto";
-import { Product } from "../products/product.entity";
+import { ProductsService } from "src/products/products.service";
 
 @Injectable()
 export class RatingsService {
   constructor(@InjectRepository(Rating) private ratingRepository: Repository<Rating>,
-              @InjectRepository(Product) private productRepository: Repository<Product>) {
+              private readonly productsService: ProductsService) {
   }
   async findAll(): Promise<Rating[]> {
     try {
@@ -34,7 +34,7 @@ export class RatingsService {
 
       const newRating: Rating = this.ratingRepository.create({ rating, product: {id: productId}, user: {id: req.user.userId} });
 
-      const product = await this.productRepository.findOneOrFail({ where: { id: productId } });
+      const product = await this.productsService.findOne(productId);
       if (!product.rating) {
         product.rating = rating
       } else {
@@ -62,7 +62,7 @@ export class RatingsService {
         });
       }
 
-      const product = await this.productRepository.findOneOrFail({ where: { id: rating.product.id } });
+      const product = await this.productsService.findOne(rating.product.id);
       const allRatings = await this.ratingRepository.find({ where: { product: {id: product.id}} })
       const sumRating = allRatings.reduce((acc, obj) => { return acc + obj.rating }, 0)
       product.rating = (sumRating + updateRatingDto.rating - rating.rating) / allRatings.length
@@ -86,7 +86,7 @@ export class RatingsService {
           relations: ["user", "product"]
         });
       }
-      const product = await this.productRepository.findOneOrFail({ where: { id: rating.product.id } });
+      const product = await this.productsService.findOne(rating.product.id);
       const allRatings = await this.ratingRepository.find({ where: { product: {id: product.id}} })
       if (allRatings.length === 1) {
         product.rating = 0
