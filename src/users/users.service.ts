@@ -24,7 +24,7 @@ export class UsersService {
 
   async findOne(req, id: number): Promise<User> {
     try {
-      if (req.user.userId === id) {
+      if (req.user.userId === +id) {
         return await this.userRepository.findOneByOrFail({ id });
       }
       throw new ForbiddenException

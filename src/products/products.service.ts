@@ -78,7 +78,7 @@ export class ProductsService {
     }
   }
 
-  async updateByOrderRow (orderStatus: string, productInstance: Product, qty: number) {
+  async updateByOrderRow (orderStatus: string, productInstance: Product, qty: number, manager) {
     if (orderStatus === 'completed') {
       productInstance.buyersCount += 1
     }
@@ -86,6 +86,9 @@ export class ProductsService {
     if (productInstance.count === 0) {
       productInstance.isAvailable = false
     }
-    await Product.save(productInstance)
+
+    await manager.update(Product, 
+      productInstance.id, 
+      { isAvailable: productInstance.isAvailable, buyersCount: productInstance.buyersCount, count: productInstance.count } )
   }
 }
