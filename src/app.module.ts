@@ -1,7 +1,6 @@
 import { Module } from "@nestjs/common";
 import { APP_GUARD } from "@nestjs/core";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { DataSource } from 'typeorm';
 import { ConfigModule } from "@nestjs/config";
 import { UsersModule } from "./users/users.module";
 
@@ -40,5 +39,4 @@ import { RatingsModule } from "./ratings/ratings.module";
   ]
 })
 export class AppModule {
-  constructor(private dataSource: DataSource) {}
 }
