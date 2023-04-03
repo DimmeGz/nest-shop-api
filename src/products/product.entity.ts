@@ -27,6 +27,6 @@ export class Product extends BaseEntity {
   @Column({ default: 0 })
   count: number
 
-  @ManyToOne(type => Category, category => category.id)
+  @ManyToOne(() => Category, category => category.id)
   category: Category
 }

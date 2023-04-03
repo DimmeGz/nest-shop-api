@@ -10,9 +10,9 @@ export class Comment extends BaseEntity {
   @Column()
   text: string;
 
-  @ManyToOne(type => Product, product => product.id, {nullable: false})
+  @ManyToOne(() => Product, product => product.id, {nullable: false})
   product: Product
 
-  @ManyToOne(type => User, user => user.id, {nullable: false, onDelete: "CASCADE"})
+  @ManyToOne(() => User, user => user.id, {nullable: false, onDelete: "CASCADE"})
   user: User
 }

@@ -19,7 +19,7 @@ export class ProductsService {
     }
   }
 
-  async findAndCountAll(query): Promise<any> {
+  async findAndCountAll(query: { take: number; page: number; }): Promise<any> {
     try {
       const take = query.take || 10
       const page = query.page || 1

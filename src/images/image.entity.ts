@@ -9,6 +9,6 @@ export class Image extends BaseEntity {
   @Column()
   imageUrl: string;
 
-  @ManyToOne(type => Product, product => product.id, {nullable: false})
+  @ManyToOne(() => Product, product => product.id, {nullable: false})
   product: Product
 }

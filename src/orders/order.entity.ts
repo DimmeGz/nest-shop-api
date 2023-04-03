@@ -8,7 +8,7 @@ export class Order extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(type => User, user => user.id, {nullable: false})
+  @ManyToOne(() => User, user => user.id, {nullable: false})
   user: User
 
   @Column({default: 0})
@@ -17,6 +17,6 @@ export class Order extends BaseEntity {
   @Column()
   status: string;
 
-  @OneToMany(type => OrderRow, orderRow => orderRow.order)
+  @OneToMany(() => OrderRow, orderRow => orderRow.order)
   orderRows: OrderRow[];
 }

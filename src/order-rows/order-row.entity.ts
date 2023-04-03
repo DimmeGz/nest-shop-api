@@ -8,11 +8,11 @@ export class OrderRow extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(type => Order, user => user.id, {nullable: false})
+  @ManyToOne(() => Order, user => user.id, {nullable: false})
   @JoinColumn({name: "id"})
   order: Order
 
-  @ManyToOne(type => Product, product => product.id, {nullable: false})
+  @ManyToOne(() => Product, product => product.id, {nullable: false})
   product: Product
 
   @Column()

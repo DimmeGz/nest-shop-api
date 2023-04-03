@@ -12,6 +12,6 @@ export class Category extends BaseEntity {
   @Column({ nullable: true })
   description: string;
 
-  @OneToMany(type => Product, product => product.id)
+  @OneToMany(() => Product, product => product.id)
   product: Product[];
 }
