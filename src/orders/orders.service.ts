@@ -55,7 +55,7 @@ export class OrdersService {
 
   async orderSumCount(rows: OrderRow[], status: string) {
     try {
-      let orderSum: number
+      let orderSum = 0
       for await (let row of rows){
         const productInstance = await this.productsService.findOne(row.product.id)
         orderSum += productInstance.price * row.qty
@@ -63,7 +63,7 @@ export class OrdersService {
       }
       return orderSum
     } catch (e) {
-
+      throw e
     }
   }
 
@@ -74,7 +74,7 @@ export class OrdersService {
 
       const newOrder: Order = await this.ordersRepository.save({ status, user: {id: req.user.userId} });
 
-      const newRows = await this.orderRowService.createOrderRows(orderRows, newOrder.id, newOrder.status)
+      const newRows = await this.orderRowService.createOrderRows(orderRows, newOrder.id)
 
       newOrder.sum = await this.orderSumCount(newRows, newOrder.status)
       return Order.save(newOrder);
@@ -95,7 +95,7 @@ export class OrdersService {
       } else {
         await this.orderRowService.checkUpdateAvailability (id, updateOrderDto.orderRows)
         await this.orderRowService.deleteRows (id, order.status)
-        const newRows = await this.orderRowService.createOrderRows(updateOrderDto.orderRows, order.id, order.status)
+        const newRows = await this.orderRowService.createOrderRows(updateOrderDto.orderRows, order.id)
 
         order.sum = await this.orderSumCount(newRows, order.status)
       }

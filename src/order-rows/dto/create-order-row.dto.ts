@@ -6,5 +6,6 @@ export class CreateOrderRowDto {
   readonly qty: number
 
   @IsNumber()
-  readonly product: number
+  @Min(1)
+  readonly productId: number
 }

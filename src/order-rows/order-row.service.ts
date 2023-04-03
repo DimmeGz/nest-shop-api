@@ -25,13 +25,17 @@ export class OrderRowService {
     return
   }
 
-  async createOrderRows(orderRows: CreateOrderRowDto[], orderId: number, orderStatus: string): Promise<OrderRow[]> {
-    let createdRows = []
-    for await (let row of orderRows) {
-      const newRow = await this.orderRowRepository.save({ qty: row.qty, product: {id:row.product}, order: {id: orderId} });
-      createdRows.push(newRow)
+  async createOrderRows(orderRows, orderId: number): Promise<OrderRow[]> {
+    try {
+      let createdRows = []
+      for await (let row of orderRows) {
+        const newRow = await this.orderRowRepository.save({ qty: row.qty, product: {id:row.product}, order: {id: orderId} });
+        createdRows.push(newRow)
+      }
+      return createdRows
+    } catch (e) {
+      throw e
     }
-    return createdRows
   }
 
   async deleteRows(orderId: number, orderStatus: string) {
