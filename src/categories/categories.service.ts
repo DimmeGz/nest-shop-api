@@ -5,12 +5,13 @@ import { Category } from "./category.entity";
 import { CreateCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
 import { Product } from "../products/product.entity";
+import { ProductsService } from "src/products/products.service";
 
 
 @Injectable()
 export class CategoriesService {
   constructor(@InjectRepository(Category) private categoryRepository: Repository<Category>,
-              @InjectRepository(Product) private productRepository: Repository<Product>) {
+              private readonly productsService: ProductsService) {
   }
   async findAll(): Promise<Category[]> {
     try {
@@ -23,7 +24,7 @@ export class CategoriesService {
   async findOne(id: number): Promise<any> {
     try {
       const category = await this.categoryRepository.findOneOrFail({ where: { id } });
-      const products = await this.productRepository.find({ where: {category: { id: category.id }}})
+      const products = await this.productsService.findByCategory(id)
       return { category, products }
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.NOT_FOUND);

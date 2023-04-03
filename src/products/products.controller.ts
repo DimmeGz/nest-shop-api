@@ -15,7 +15,7 @@ export class ProductsController {
 
   @Get()
   getAll(@Query() query): Promise<Product[]> {
-    return this.productsService.findAll(query);
+    return this.productsService.findAndCountAll(query);
   }
 
   @Get(":id")

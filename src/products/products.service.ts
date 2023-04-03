@@ -15,7 +15,15 @@ export class ProductsService {
   constructor(@InjectRepository(Product) private productRepository: Repository<Product>) {
   }
 
-  async findAll(query): Promise<any> {
+  async findByCategory(categoryId: number): Promise<Product[]> {
+    try {
+      return await this.productRepository.find({ where: {category: { id: categoryId }}})
+    } catch (e) {
+      return e;
+    }
+  }
+
+  async findAndCountAll(query): Promise<any> {
     try {
       const take = query.take || 10
       const page = query.page || 1
