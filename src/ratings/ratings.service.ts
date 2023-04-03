@@ -52,15 +52,10 @@ export class RatingsService {
 
   async update(req, id: number, updateRatingDto: UpdateRatingDto) {
     try {
-      let rating
-      if (req.user.role === 'admin') {
-        rating = await this.ratingRepository.findOneOrFail({where: { id }, relations: ['user', 'product'] });
-      } else {
-        rating = await this.ratingRepository.findOneOrFail({
+      const rating = await this.ratingRepository.findOneOrFail({
           where: { id, user: { id: req.user.userId } },
           relations: ["user", "product"]
         });
-      }
 
       const product = await this.productsService.findOne(rating.product.id);
       const allRatings = await this.ratingRepository.find({ where: { product: {id: product.id}} })
@@ -77,15 +72,11 @@ export class RatingsService {
 
   async remove(req, id: number) {
     try {
-      let rating
-      if (req.user.role === 'admin') {
-        rating = await this.ratingRepository.findOneOrFail({where: { id }, relations: ['user', 'product'] });
-      } else {
-        rating = await this.ratingRepository.findOneOrFail({
+      const rating = await this.ratingRepository.findOneOrFail({
           where: { id, user: { id: req.user.userId } },
           relations: ["user", "product"]
         });
-      }
+      
       const product = await this.productsService.findOne(rating.product.id);
       const allRatings = await this.ratingRepository.find({ where: { product: {id: product.id}} })
       if (allRatings.length === 1) {
