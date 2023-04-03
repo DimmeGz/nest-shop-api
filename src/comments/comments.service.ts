@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
@@ -15,7 +15,7 @@ export class CommentsService {
     try {
       return await this.commentRepository.find();
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+      throw new BadRequestException
     }
   }
 
@@ -23,7 +23,7 @@ export class CommentsService {
     try {
       return await this.commentRepository.findOneOrFail({where: { id }, relations: ['user', 'product'] });
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.NOT_FOUND);
+      throw new NotFoundException
     }
   }
 
@@ -34,7 +34,7 @@ export class CommentsService {
       const newComment: Comment = this.commentRepository.create({ text, product: {id: productId}, user: {id: req.user.userId} });
       return Comment.save(newComment);
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+      throw new BadRequestException
     }
   }
 
@@ -44,7 +44,7 @@ export class CommentsService {
       Object.assign(comment, updateCommentDto)
       return comment.save()
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.FORBIDDEN);
+      throw new NotFoundException
     }
   }
 
@@ -54,9 +54,9 @@ export class CommentsService {
       if (result.affected) {
         return result;
       }
-      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+      throw new NotFoundException
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+      throw new BadRequestException
     }
   }
 }

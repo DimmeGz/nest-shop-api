@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "./user.entity";
@@ -17,7 +17,7 @@ export class UsersService {
     try {
       return await this.userRepository.find();
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+      throw new BadRequestException
     }
   }
 
@@ -28,7 +28,7 @@ export class UsersService {
       }
       return await this.userRepository.findOneOrFail({ where: { id: +id === req.user.userId? id : req.user.userId } })
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+      throw new BadRequestException
     }
   }
 
@@ -45,7 +45,7 @@ export class UsersService {
 
       return token;
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+      throw new BadRequestException
     }
   }
 
@@ -57,7 +57,7 @@ export class UsersService {
       await this.userRepository.update({ id }, updateUserDto);
       return await this.userRepository.findOneByOrFail({ id });
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+      throw new NotFoundException
     }
   }
 
@@ -66,7 +66,7 @@ export class UsersService {
       const result = await this.userRepository.delete(id);
       return result;
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+      throw new NotFoundException
     }
   }
 
@@ -74,7 +74,7 @@ export class UsersService {
     try {
       return await this.userRepository.findOneByOrFail([{ phone: username }, { email: username }]);
     }catch (e) {
-      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+      throw new NotFoundException
     }
   }
 
@@ -82,7 +82,7 @@ export class UsersService {
     try {
       return await this.userRepository.findOneBy(property);
     } catch (e) {
-      return e
+      throw new BadRequestException
     }
   }
 }

@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { BadRequestException, HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { OrderRow } from "./order-row.entity";
 import { Repository } from "typeorm";
@@ -44,34 +44,42 @@ export class OrderRowService {
   }
 
   async deleteRows(orderId: number, orderStatus: string) {
-    const orderRows = await this.orderRowRepository.find({where: { order: { id: orderId } }, relations: ['product']});
-    for await (let row of orderRows) {
-      // update product.buyersCount
-      const productInstance = await this.productsService.findOne(row.product.id)
-      if (orderStatus === 'completed') {
-        productInstance.buyersCount -= 1
+    try {
+      const orderRows = await this.orderRowRepository.find({where: { order: { id: orderId } }, relations: ['product']});
+      for await (let row of orderRows) {
+        // update product.buyersCount
+        const productInstance = await this.productsService.findOne(row.product.id)
+        if (orderStatus === 'completed') {
+          productInstance.buyersCount -= 1
+        }
+        if (productInstance.count === 0) {
+          productInstance.isAvailable = true
+        }
+        productInstance.count += row.qty
+        await Product.save(productInstance)
+        await OrderRow.remove(row)
       }
-      if (productInstance.count === 0) {
-        productInstance.isAvailable = true
-      }
-      productInstance.count += row.qty
-      await Product.save(productInstance)
-      await OrderRow.remove(row)
+    } catch (e) {
+      throw new BadRequestException
     }
   }
 
   async updateProductBuyerCount (orderId: number, oldStatus: string, newStatus: string) {
-    const orderRows = await this.orderRowRepository.find({where: { order: { id: orderId } }, relations: ['product']});
-    for await (let row of orderRows) {
-      const productInstance = await this.productsService.findOne(row.product.id)
-      if (oldStatus === 'completed') {
-        productInstance.buyersCount -= 1
-        await Product.save(productInstance)
+    try {
+      const orderRows = await this.orderRowRepository.find({where: { order: { id: orderId } }, relations: ['product']});
+      for await (let row of orderRows) {
+        const productInstance = await this.productsService.findOne(row.product.id)
+        if (oldStatus === 'completed') {
+          productInstance.buyersCount -= 1
+          await Product.save(productInstance)
+        }
+        if (newStatus === 'completed') {
+          productInstance.buyersCount += 1
+          await Product.save(productInstance)
+        }
       }
-      if (newStatus === 'completed') {
-        productInstance.buyersCount += 1
-        await Product.save(productInstance)
-      }
+    } catch (e) {
+      throw new BadRequestException
     }
   }
 
@@ -94,7 +102,7 @@ export class OrderRowService {
         }
       }
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.NOT_ACCEPTABLE);
+      throw e;
     }
   }
 }

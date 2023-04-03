@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
@@ -16,7 +16,7 @@ export class RatingsService {
     try {
       return await this.ratingRepository.find();
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+      throw new BadRequestException
     }
   }
 
@@ -24,7 +24,7 @@ export class RatingsService {
     try {
       return await this.ratingRepository.findOneOrFail({where: { id }, relations: ['user', 'product'] });
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.NOT_FOUND);
+      throw new NotFoundException
     }
   }
 
@@ -46,7 +46,7 @@ export class RatingsService {
 
       return Rating.save(newRating);
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+      throw new BadRequestException
     }
   }
 
@@ -66,7 +66,7 @@ export class RatingsService {
       Object.assign(rating, updateRatingDto)
       return await Rating.save(rating)
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.FORBIDDEN);
+      throw new BadRequestException
     }
   }
 
@@ -90,7 +90,7 @@ export class RatingsService {
       await Rating.remove(rating)
       return { deleted: id };
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.FORBIDDEN);
+      throw new BadRequestException
     }
   }
 
@@ -108,7 +108,7 @@ export class RatingsService {
       }
       return false
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+      throw new BadRequestException
     }
   }
 }

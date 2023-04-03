@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Category } from "./category.entity";
@@ -16,7 +16,7 @@ export class CategoriesService {
     try {
       return await this.categoryRepository.find();
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+      throw new BadRequestException
     }
   }
 
@@ -25,7 +25,7 @@ export class CategoriesService {
       const newCategory: Category = this.categoryRepository.create(createCategoryDto);
       return Category.save(newCategory);
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+      throw new BadRequestException
     }
   }
 
@@ -34,7 +34,7 @@ export class CategoriesService {
       await this.categoryRepository.update({ id }, updateCategoryDto);
       return await this.categoryRepository.findOneByOrFail({ id });
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+      throw new NotFoundException
     }
   }
 
@@ -43,7 +43,7 @@ export class CategoriesService {
       const result = await this.categoryRepository.delete(id);
       return result;
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+      throw new NotFoundException
     }
   }
 }

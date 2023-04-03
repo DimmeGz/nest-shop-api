@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Image } from "./image.entity";
@@ -15,7 +15,7 @@ export class ImagesService {
     try {
       return await this.imageRepository.find();
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+      throw new BadRequestException
     }
   }
 
@@ -23,7 +23,7 @@ export class ImagesService {
     try {
       return await this.imageRepository.findOneOrFail({ where: { id }, relations: ["product"] });
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.NOT_FOUND);
+      throw new NotFoundException
     }
   }
 
@@ -34,7 +34,7 @@ export class ImagesService {
       const newImage: Image = this.imageRepository.create({ imageUrl, product: { id: productId } });
       return Image.save(newImage);
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+      throw new BadRequestException
     }
   }
 
@@ -43,7 +43,7 @@ export class ImagesService {
       await this.imageRepository.update({ id }, updateImageDto);
       return await this.imageRepository.findOneByOrFail({ id });
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+      throw new NotFoundException
     }
   }
 
@@ -52,7 +52,7 @@ export class ImagesService {
       const result = await this.imageRepository.delete(id);
       return result;
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+      throw new NotFoundException
     }
   }
 }
