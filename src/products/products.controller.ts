@@ -18,6 +18,11 @@ export class ProductsController {
     return this.productsService.findAndCountAll(query);
   }
 
+  @Get('/category/:id')
+  getByCategory(@Param("id") id: number, @Query() query): Promise<any> {
+    return this.productsService.findByCategory(id, query)
+  }
+
   @Get(":id")
   getOne(@Param("id") id: number): Promise<Product> {
     return this.productsService.findOne(id);

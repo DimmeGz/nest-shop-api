@@ -20,16 +20,6 @@ export class CategoriesService {
     }
   }
 
-  async findOne(id: number): Promise<any> {
-    try {
-      const category = await this.categoryRepository.findOneOrFail({ where: { id } });
-      const products = await this.productsService.findByCategory(id)
-      return { category, products }
-    } catch (e) {
-      throw new HttpException(e.message, HttpStatus.NOT_FOUND);
-    }
-  }
-
   async create(createCategoryDto: CreateCategoryDto) {
     try {
       const newCategory: Category = this.categoryRepository.create(createCategoryDto);

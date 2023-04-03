@@ -18,11 +18,6 @@ export class CategoriesController {
     return this.categoriesService.findAll();
   }
 
-  @Get(":id")
-  getOne(@Param("id") id: number): Promise<Category> {
-    return this.categoriesService.findOne(id);
-  }
-
   @Roles(Role.Admin)
   @Post()
   create(@Body() createCategoryDto: CreateCategoryDto): Promise<Category> {
