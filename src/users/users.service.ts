@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "./user.entity";
@@ -6,6 +6,7 @@ import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import * as bcrypt from "bcryptjs";
 import * as jwt from "jsonwebtoken";
+import { ForbiddenException } from "@nestjs/common/exceptions";
 
 
 @Injectable()
@@ -23,10 +24,10 @@ export class UsersService {
 
   async findOne(req, id: number): Promise<User> {
     try {
-      if (req.user.role === 'admin') {
+      if (req.user.userId === id) {
         return await this.userRepository.findOneByOrFail({ id });
       }
-      return await this.userRepository.findOneOrFail({ where: { id: +id === req.user.userId? id : req.user.userId } })
+      throw new ForbiddenException
     } catch (e) {
       throw new BadRequestException
     }
