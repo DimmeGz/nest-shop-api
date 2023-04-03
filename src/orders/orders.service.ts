@@ -6,11 +6,14 @@ import { Order } from "./order.entity";
 import { CreateOrderDto } from "./dto/create-order.dto";
 import { UpdateOrderDto } from "./dto/update-order.dto";
 import { OrderRowService } from "../order-rows/order-row.service";
+import { ProductsService } from "src/products/products.service";
+import { OrderRow } from "src/order-rows/order-row.entity";
 
 @Injectable()
 export class OrdersService {
   constructor(@InjectRepository(Order) private ordersRepository: Repository<Order>,
-              private readonly orderRowService: OrderRowService) {
+              private readonly orderRowService: OrderRowService,
+              private readonly productsService: ProductsService) {
   }
   async findAll(req, query): Promise<any> {
     try {
@@ -50,6 +53,20 @@ export class OrdersService {
     }
   }
 
+  async orderSumCount(rows: OrderRow[], status: string) {
+    try {
+      let orderSum: number
+      for await (let row of rows){
+        const productInstance = await this.productsService.findOne(row.product.id)
+        orderSum += productInstance.price * row.qty
+        await this.productsService.updateByOrderRow(status, productInstance, row.qty)
+      }
+      return orderSum
+    } catch (e) {
+
+    }
+  }
+
   async create(req, createOrderDto: CreateOrderDto) {
     try {
       const {status, orderRows } = createOrderDto
@@ -57,7 +74,9 @@ export class OrdersService {
 
       const newOrder: Order = await this.ordersRepository.save({ status, user: {id: req.user.userId} });
 
-      newOrder.sum = await this.orderRowService.createOrderRowsAndCountSum(orderRows, newOrder.id, newOrder.status)
+      const newRows = await this.orderRowService.createOrderRows(orderRows, newOrder.id, newOrder.status)
+
+      newOrder.sum = await this.orderSumCount(newRows, newOrder.status)
       return Order.save(newOrder);
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
@@ -76,7 +95,9 @@ export class OrdersService {
       } else {
         await this.orderRowService.checkUpdateAvailability (id, updateOrderDto.orderRows)
         await this.orderRowService.deleteRows (id, order.status)
-        order.sum = await this.orderRowService.createOrderRowsAndCountSum (updateOrderDto.orderRows, id, order.status)
+        const newRows = await this.orderRowService.createOrderRows(updateOrderDto.orderRows, order.id, order.status)
+
+        order.sum = await this.orderSumCount(newRows, order.status)
       }
 
       return await Order.save(order)

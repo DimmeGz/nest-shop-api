@@ -25,22 +25,13 @@ export class OrderRowService {
     return
   }
 
-  async createOrderRowsAndCountSum(orderRows: CreateOrderRowDto[], orderId: number, orderStatus: string): Promise<number> {
-    let orderSum: number = 0
+  async createOrderRows(orderRows: CreateOrderRowDto[], orderId: number, orderStatus: string): Promise<OrderRow[]> {
+    let createdRows = []
     for await (let row of orderRows) {
-      await this.orderRowRepository.save({ qty: row.qty, product: {id:row.product}, order: {id: orderId} });
-      const productInstance = await this.productsService.findOne(row.product)
-      orderSum += productInstance.price * row.qty
-      if (orderStatus === 'completed') {
-        productInstance.buyersCount += 1
-      }
-      productInstance.count -= row.qty
-      if (productInstance.count === 0) {
-        productInstance.isAvailable = false
-      }
-      await Product.save(productInstance)
+      const newRow = await this.orderRowRepository.save({ qty: row.qty, product: {id:row.product}, order: {id: orderId} });
+      createdRows.push(newRow)
     }
-    return orderSum
+    return createdRows
   }
 
   async deleteRows(orderId: number, orderStatus: string) {

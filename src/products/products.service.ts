@@ -77,4 +77,15 @@ export class ProductsService {
       throw new NotFoundException
     }
   }
+
+  async updateByOrderRow (orderStatus: string, productInstance: Product, qty: number) {
+    if (orderStatus === 'completed') {
+      productInstance.buyersCount += 1
+    }
+    productInstance.count -= qty
+    if (productInstance.count === 0) {
+      productInstance.isAvailable = false
+    }
+    await Product.save(productInstance)
+  }
 }
