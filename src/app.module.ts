@@ -11,6 +11,7 @@ import { AuthModule } from "./auth/auth.module";
 import { ProductsModule } from "./products/products.module";
 import { OrdersModule } from "./orders/orders.module";
 import { ImagesModule } from "./images/images.module";
+import { CategoriesModule } from "./categories/categories.module";
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { ImagesModule } from "./images/images.module";
     ProductsModule,
     OrdersModule,
     ImagesModule,
+    CategoriesModule,
   ],
   controllers: [],
   providers: [
