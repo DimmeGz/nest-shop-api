@@ -4,16 +4,17 @@ import { OrderRow } from "./order-row.entity";
 import { Repository } from "typeorm";
 import { CreateOrderRowDto } from "./dto/create-order-row.dto";
 import { Product } from "../products/product.entity";
+import { ProductsService } from "src/products/products.service";
 
 @Injectable()
 export class OrderRowService {
   constructor(@InjectRepository(OrderRow) private orderRowRepository: Repository<OrderRow>,
-              @InjectRepository(Product) private productRepository: Repository<Product>) {
+              private readonly productsService: ProductsService) {
   }
 
   async checkProductsAvailability (orderRows): Promise<any> {
     for await (let row of orderRows) {
-      const productInstance = await this.productRepository.findOneOrFail({ where: { id: row.product } });
+      const productInstance = await this.productsService.findOne(row.product)
       if (!productInstance.isAvailable) {
         throw new HttpException(`Product ${productInstance.name} is not available`, HttpStatus.NOT_ACCEPTABLE)
       }
@@ -28,7 +29,7 @@ export class OrderRowService {
     let orderSum: number = 0
     for await (let row of orderRows) {
       await this.orderRowRepository.save({ qty: row.qty, product: {id:row.product}, order: {id: orderId} });
-      const productInstance = await this.productRepository.findOneOrFail({where: { id: row.product } });
+      const productInstance = await this.productsService.findOne(row.product)
       orderSum += productInstance.price * row.qty
       if (orderStatus === 'completed') {
         productInstance.buyersCount += 1
@@ -46,7 +47,7 @@ export class OrderRowService {
     const orderRows = await this.orderRowRepository.find({where: { order: { id: orderId } }, relations: ['product']});
     for await (let row of orderRows) {
       // update product.buyersCount
-      const productInstance = await this.productRepository.findOneOrFail({where: { id: row.product.id } });
+      const productInstance = await this.productsService.findOne(row.product.id)
       if (orderStatus === 'completed') {
         productInstance.buyersCount -= 1
       }
@@ -62,7 +63,7 @@ export class OrderRowService {
   async updateProductBuyerCount (orderId: number, oldStatus: string, newStatus: string) {
     const orderRows = await this.orderRowRepository.find({where: { order: { id: orderId } }, relations: ['product']});
     for await (let row of orderRows) {
-      const productInstance = await this.productRepository.findOneOrFail({where: { id: row.product.id } });
+      const productInstance = await this.productsService.findOne(row.product.id)
       if (oldStatus === 'completed') {
         productInstance.buyersCount -= 1
         await Product.save(productInstance)
@@ -85,7 +86,7 @@ export class OrderRowService {
       }
       
       for (let newRow of newRows) {
-        const productInstance = await this.productRepository.findOneOrFail({where: { id: newRow.productId } });
+        const productInstance = await this.productsService.findOne(newRow.productId)
         if (productInstance.id in products) {
           if (newRow.qty > productInstance.count + products[productInstance.id]) {
             throw new HttpException(`Too much ${productInstance.name}`, HttpStatus.NOT_ACCEPTABLE);
