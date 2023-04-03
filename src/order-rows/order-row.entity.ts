@@ -9,7 +9,7 @@ export class OrderRow extends BaseEntity {
   id: number;
 
   @ManyToOne(type => Order, user => user.id, {nullable: false})
-  // @JoinColumn({name: "id"})
+  @JoinColumn({name: "id"})
   order: Order
 
   @ManyToOne(type => Product, product => product.id, {nullable: false})

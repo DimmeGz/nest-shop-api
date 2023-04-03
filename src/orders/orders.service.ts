@@ -78,52 +78,18 @@ export class OrdersService {
     try {
       const order = await this.findOne(req, id)
       if (!updateOrderDto.orderRows) {
-        // update product.buyersCount
         if (order.status !== updateOrderDto.status && [updateOrderDto.status, order.status].includes('completed')) {
           await this.orderRowService.updateProductBuyerCount(order.id, order.status, updateOrderDto.status)
         }
         Object.assign(order, updateOrderDto)
 
       } else {
-        // delete old rows
-        const orderRows = await this.orderRowRepository.find({where: { order: { id: id } }, relations: ['product']});
-        await this.removeProductsFromRows(order, orderRows)
-        order.sum = 0
-        order.orderRows = []
-
-        // create new rows
-        if (Array.isArray(updateOrderDto.orderRows)) {
-          const canCreate = await this.checkProductsAvailability(updateOrderDto)
-          if (!canCreate.canCreate){
-            // if can't save new orderRows, return to old orderRows
-            await this.createOrderRows (orderRows, order)
-            throw new HttpException(canCreate.message, HttpStatus.NOT_ACCEPTABLE);
-          }
-
-          for await (let row of updateOrderDto.orderRows) {
-            const {qty, product} = row
-            const newRow: OrderRow = this.orderRowRepository.create({ qty, product: {id:product}, order: {id: id} });
-            await OrderRow.save(newRow)
-            order.orderRows.push(newRow)
-            const productInstance = await this.productRepository.findOneOrFail({where: { id: newRow.product.id } });
-            order.sum += qty * productInstance.price
-            // update product.buyersCount
-            if (order.status === 'completed') {
-              productInstance.buyersCount += 1
-            }
-            productInstance.count -= row.qty
-            if (productInstance.count === 0) {
-              productInstance.isAvailable = false
-            }
-          }
-          for await (let row of updateOrderDto.orderRows) {
-            const productInstance = await this.productRepository.findOneOrFail({ where: { id: row.product.id } });
-            await Product.save(productInstance)
-          }
-        }
+        await this.orderRowService.checkUpdateAvailability (id, updateOrderDto.orderRows)
+        await this.orderRowService.deleteRows (id, order.status)
+        order.sum = await this.orderRowService.createOrderRowsAndCountSum (updateOrderDto.orderRows, id, order.status)
       }
-      await Order.save(order)
-      return order
+
+      return await Order.save(order)
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }

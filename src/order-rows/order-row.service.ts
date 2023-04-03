@@ -73,4 +73,27 @@ export class OrderRowService {
       }
     }
   }
+
+  async checkUpdateAvailability (orderId: number, newRows: Array<any>) {
+    try {      
+      const orderRows = await this.orderRowRepository.find({where: { order: { id: orderId } }, relations: ['product']});
+
+      let products = new Object
+      for (let orderRow of orderRows) {      
+        const product = orderRow.product.id
+        products[product] = orderRow.qty
+      }
+      
+      for (let newRow of newRows) {
+        const productInstance = await this.productRepository.findOneOrFail({where: { id: newRow.productId } });
+        if (productInstance.id in products) {
+          if (newRow.qty > productInstance.count + products[productInstance.id]) {
+            throw new HttpException(`Too much ${productInstance.name}`, HttpStatus.NOT_ACCEPTABLE);
+          }
+        }
+      }
+    } catch (e) {
+      throw new HttpException(e.message, HttpStatus.NOT_ACCEPTABLE);
+    }
+  }
 }
