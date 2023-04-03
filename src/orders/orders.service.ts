@@ -43,14 +43,8 @@ export class OrdersService {
 
   async findOne(req, id: number): Promise<Order> {
     try {
-      let order
-      if (req.user.role === 'admin') {
-        order = await this.ordersRepository.findOneOrFail({where: { id }, relations: ['user', 'orderRows', 'orderRows.product'] });
-      } else {
-        order = await this.ordersRepository
+      return await this.ordersRepository
           .findOneOrFail({where: { id, user: { id: req.user.userId } }, relations: ['user', 'orderRows', 'orderRows.product'] });
-      };
-      return order;
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.NOT_FOUND);
     }
@@ -93,12 +87,7 @@ export class OrdersService {
 
   async remove(req, id: number) {
     try {
-      let order
-      if (req.user.role === 'admin') {
-        order = await this.ordersRepository.findOneOrFail({ where: { id } });
-      } else {
-        order = await this.ordersRepository.findOneOrFail({ where: { id, user: { id: req.user.userId } } });
-      }
+      const order = await this.ordersRepository.findOneOrFail({ where: { id, user: { id: req.user.userId } } });
 
       await this.orderRowService.deleteRows(order.id, order.status)
       await Order.remove(order)
