@@ -54,7 +54,7 @@ export class RatingsService {
     try {
       const rating = await this.ratingRepository.findOneOrFail({
           where: { id, user: { id: req.user.userId } },
-          relations: ["user", "product"]
+          relations: ["product"]
         });
 
       const product = await this.productsService.findOne(rating.product.id);
@@ -74,7 +74,7 @@ export class RatingsService {
     try {
       const rating = await this.ratingRepository.findOneOrFail({
           where: { id, user: { id: req.user.userId } },
-          relations: ["user", "product"]
+          relations: ["product"]
         });
       
       const product = await this.productsService.findOne(rating.product.id);
