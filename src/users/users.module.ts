@@ -13,7 +13,7 @@ import { UserExistsRule } from "../middleware/unique.validator";
     ],
   controllers: [UsersController],
   imports: [TypeOrmModule.forFeature([User])],
-  exports: [UsersService, TypeOrmModule],
+  exports: [UsersService],
 })
 export class UsersModule {
 }
