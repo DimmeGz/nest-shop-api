@@ -5,7 +5,6 @@ import { User } from "./user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import * as bcrypt from "bcryptjs";
-import { JwtService } from "@nestjs/jwt";
 
 
 @Injectable()
@@ -35,7 +34,6 @@ export class UsersService {
   async create(createUserDto: CreateUserDto) {
     try {
       const newUser: User = this.userRepository.create(createUserDto);
-      newUser.password = await bcrypt.hash(newUser.password, 10);
       newUser.role = "user";
       await User.save(newUser);
 
@@ -49,9 +47,6 @@ export class UsersService {
 
   async update(id: number, updateUserDto: UpdateUserDto) {
     try {
-      if (updateUserDto.password) {
-        updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
-      }
       await this.userRepository.update({ id }, updateUserDto);
       return await this.userRepository.findOneByOrFail({ id });
     } catch (e) {

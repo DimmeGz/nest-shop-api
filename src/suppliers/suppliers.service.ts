@@ -35,7 +35,6 @@ export class SuppliersService {
     async create(createSupplierDto: CreateSupplierDto) {
         try {
             const newSupplier: Supplier = this.supplierRepository.create(createSupplierDto);
-            newSupplier.password = await bcrypt.hash(newSupplier.password, 10);
             await Supplier.save(newSupplier);
 
             return newSupplier;
@@ -47,9 +46,6 @@ export class SuppliersService {
 
     async update(id: number, updateSupplierDto: UpdateSupplierDto) {
         try {
-          if (updateSupplierDto.password) {
-            updateSupplierDto.password = await bcrypt.hash(updateSupplierDto.password, 10);
-          }
           await this.supplierRepository.update({ id }, updateSupplierDto);
           return await this.supplierRepository.findOneByOrFail({ id });
         } catch (e) {

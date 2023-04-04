@@ -25,18 +25,14 @@ export class UsersController {
       return this.userService.findOne(req, id);
   }
 
-  // @Post()
-  // create(@Body() createUserDto: CreateUserDto): Promise<string> {
-  //   return this.userService.create(createUserDto);
-  // }
-
   @Roles(Role.Admin)
   @Delete(":id")
   remove(@Param("id") id: number) {
     return this.userService.remove(id);
   }
 
-  @Roles(Role.Admin, Role.Owner)
+  @Roles(Role.Admin, Role.User)
+  @UseGuards(JwtAuthGuard)
   @Patch(":id")
   update(@Body() updateUserDto: UpdateUserDto, @Param("id") id: number): Promise<User> {
     return this.userService.update(id, updateUserDto);
