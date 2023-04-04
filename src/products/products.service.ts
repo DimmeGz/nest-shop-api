@@ -53,14 +53,17 @@ export class ProductsService {
     }
   }
 
-  async create(createProductDto: CreateProductDto) {
+  async create(req, createProductDto: CreateProductDto) {
     try {
       const newProduct: Product = this.productRepository.create(createProductDto);
+      newProduct.supplier = req.user.userId
       if (newProduct.count === 0) {
         newProduct.isAvailable = false
       }
       return Product.save(newProduct);
     } catch (e) {
+      console.log(e);
+      
       throw new BadRequestException
     }
   }
