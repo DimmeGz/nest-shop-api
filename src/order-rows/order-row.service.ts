@@ -4,6 +4,7 @@ import { OrderRow } from "./order-row.entity";
 import { Repository } from "typeorm";
 import { Product } from "../products/product.entity";
 import { ProductsService } from "src/products/products.service";
+import { Supplier } from "src/suppliers/supplier.entity";
 
 @Injectable()
 export class OrderRowService {
@@ -37,9 +38,16 @@ export class OrderRowService {
     }
   }
 
-  async deleteRows(orderId: number, orderStatus: string, manager) {
+  async getRowsByOrder (orderId: number, manager): Promise<OrderRow[]> {
     try {
-      const orderRows = await manager.find(OrderRow, {where: { order: { id: orderId } }, relations: [ 'product' ] } );
+      return await manager.find(OrderRow, {where: { order: { id: orderId } }, relations: [ 'product' ] } );
+    } catch (e) {
+      throw new BadRequestException
+    }
+  }
+
+  async deleteRows(orderRows: OrderRow[], orderStatus: string, manager) {
+    try {
       for await (let row of orderRows) {
         const productInstance = await manager.findOne(Product, { where: { id: row.product.id } } )
 
@@ -62,10 +70,8 @@ export class OrderRowService {
     }
   }
 
-  async updateProductBuyerCount (orderId: number, oldStatus: string, newStatus: string, manager) {
+  async updateProductBuyerCount (orderRows, oldStatus: string, newStatus: string, manager) {
     try {
-      const orderRows = await manager.find(OrderRow, {where: { order: { id: orderId } }, relations: [ 'product' ] } );
-      
       for await (let row of orderRows) {
         const productInstance = await manager.findOne(Product, { where: { id: row.product.id } } )
         if (oldStatus === 'completed') {
@@ -101,6 +107,24 @@ export class OrderRowService {
       }
     } catch (e) {
       throw e;
+    }
+  }
+
+  async updateSuppliersBallance (rows: OrderRow[], status, manager) {
+    try {
+      for (let row of rows) {
+        const productInstance = await manager.findOne(Product, { where: { id: row.product.id }, relations: ["supplier"] } )
+
+        const supplier = await manager.findOne(Supplier, { where: { id: productInstance.supplier.id } } )
+        
+        if (status === 'completed') {
+          await manager.update(Supplier, supplier.id, { ballance: supplier.ballance + (productInstance.price * row.qty) })
+        } else {
+          await manager.update(Supplier, supplier.id, { ballance: supplier.ballance - (productInstance.price * row.qty) })
+        }
+      }
+    } catch (e) {
+
     }
   }
 }

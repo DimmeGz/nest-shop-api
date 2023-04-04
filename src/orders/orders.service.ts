@@ -9,6 +9,7 @@ import { UpdateOrderDto } from "./dto/update-order.dto";
 import { OrderRowService } from "../order-rows/order-row.service";
 import { ProductsService } from "src/products/products.service";
 import { OrderRow } from "src/order-rows/order-row.entity";
+import { User } from "src/users/user.entity";
 
 @Injectable()
 export class OrdersService {
@@ -83,6 +84,12 @@ export class OrdersService {
       const orderSum = await this.orderSumCount(newRows, newOrder.status, queryRunner.manager)
       newOrder.sum = orderSum
 
+      if (newOrder.status === 'completed') {
+        const user = await queryRunner.manager.findOne(User, { where: { id: req.user.userId } })
+        await queryRunner.manager.update(User, req.user.userId, {ballance: user.ballance - orderSum})
+        await this.orderRowService.updateSuppliersBallance(newRows, newOrder.status, queryRunner.manager)
+      }
+
       await queryRunner.manager.update(Order, newOrder.id, {sum: orderSum})
       await queryRunner.commitTransaction();
 
@@ -102,18 +109,44 @@ export class OrdersService {
 
     try {
       const order = await queryRunner.manager.findOne(Order, {where: {id}})
-      if (order.status !== updateOrderDto.status && [updateOrderDto.status, order.status].includes('completed')) {
-        await this.orderRowService.updateProductBuyerCount(order.id, order.status, updateOrderDto.status, queryRunner.manager)
-      }
 
       if (!updateOrderDto.orderRows) {
+        if (order.status !== updateOrderDto.status && [updateOrderDto.status, order.status].includes('completed')) {
+          const orderRows = await this.orderRowService.getRowsByOrder (order.id, queryRunner.manager)
+          await this.orderRowService.updateProductBuyerCount(orderRows, order.status, updateOrderDto.status, queryRunner.manager)  
+
+          await this.orderRowService.updateSuppliersBallance(orderRows, updateOrderDto.status, queryRunner.manager)
+          
+          const user = await queryRunner.manager.findOne(User, {where: {id: req.user.userId}})
+          
+          if (updateOrderDto.status === 'completed') {
+            await queryRunner.manager.update(User, req.user.userId, {ballance: user.ballance - order.sum})
+          } else {
+            await queryRunner.manager.update(User, req.user.userId, {ballance: user.ballance + order.sum})
+          }
+        }
+
         await queryRunner.manager.update(Order, order.id, updateOrderDto)
       } else {
         await this.orderRowService.checkUpdateAvailability (id, updateOrderDto.orderRows, queryRunner.manager)
-        await this.orderRowService.deleteRows (id, order.status, queryRunner.manager)
-        const newRows = await this.orderRowService.createOrderRows(updateOrderDto.orderRows, order.id, queryRunner.manager)
+        const orderRows = await this.orderRowService.getRowsByOrder (order.id, queryRunner.manager)
 
+        if (order.status === 'completed') {
+          const user = await queryRunner.manager.findOne(User, { where: { id: req.user.userId } })
+          await queryRunner.manager.update(User, req.user.userId, {ballance: user.ballance + order.sum})
+          await this.orderRowService.updateSuppliersBallance(orderRows, 'deleted', queryRunner.manager)
+        }
+
+        await this.orderRowService.deleteRows (orderRows, order.status, queryRunner.manager)
+        const newRows = await this.orderRowService.createOrderRows(updateOrderDto.orderRows, order.id, queryRunner.manager)
         const orderSum = await this.orderSumCount(newRows, order.status, queryRunner.manager)
+
+        if (updateOrderDto.status === 'completed') {
+          const user = await queryRunner.manager.findOne(User, { where: { id: req.user.userId } })
+          await queryRunner.manager.update(User, req.user.userId, {ballance: user.ballance - orderSum})
+          await this.orderRowService.updateSuppliersBallance(newRows, updateOrderDto.status, queryRunner.manager)
+        }
+
         order.sum = orderSum
         order.status = updateOrderDto.status
 
@@ -123,6 +156,8 @@ export class OrdersService {
       await queryRunner.commitTransaction();
       return order
     } catch (e) {
+      console.log(e);
+      
       await queryRunner.rollbackTransaction();
       throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     } finally {
@@ -138,7 +173,14 @@ export class OrdersService {
     try {
       const order = await queryRunner.manager.findOne(Order, {where: {id}})
 
-      await this.orderRowService.deleteRows(order.id, order.status, queryRunner.manager)
+      const orderRows = await this.orderRowService.getRowsByOrder (order.id, queryRunner.manager)
+      if (order.status === 'completed') {
+        const user = await queryRunner.manager.findOne(User, { where: { id: req.user.userId } })
+        await queryRunner.manager.update(User, req.user.userId, {ballance: user.ballance + order.sum})
+        await this.orderRowService.updateSuppliersBallance(orderRows, 'deleted', queryRunner.manager)
+      }
+
+      await this.orderRowService.deleteRows(orderRows, order.status, queryRunner.manager)
       await queryRunner.manager.delete(Order, id)
 
       await queryRunner.commitTransaction();
