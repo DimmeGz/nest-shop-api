@@ -1,7 +1,6 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import * as bcrypt from "bcryptjs";
 
 import { CreateSupplierDto } from "./dto/create-supplier.dto";
 import { Supplier } from "./supplier.entity";
@@ -46,8 +45,10 @@ export class SuppliersService {
 
     async update(id: number, updateSupplierDto: UpdateSupplierDto) {
         try {
-          await this.supplierRepository.update({ id }, updateSupplierDto);
-          return await this.supplierRepository.findOneByOrFail({ id });
+          const supplier = await this.supplierRepository.findOneByOrFail({ id });
+          Object.assign(supplier, updateSupplierDto)
+          await Supplier.update({ id }, supplier)
+          return supplier;
         } catch (e) {
           throw new NotFoundException
         }

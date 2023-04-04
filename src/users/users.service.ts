@@ -4,7 +4,6 @@ import { Repository } from "typeorm";
 import { User } from "./user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import * as bcrypt from "bcryptjs";
 
 
 @Injectable()
@@ -47,8 +46,10 @@ export class UsersService {
 
   async update(id: number, updateUserDto: UpdateUserDto) {
     try {
-      await this.userRepository.update({ id }, updateUserDto);
-      return await this.userRepository.findOneByOrFail({ id });
+      const user = await this.userRepository.findOneByOrFail({ id });
+      Object.assign(user, updateUserDto)
+      await User.update({ id }, user)
+      return user;
     } catch (e) {
       throw new NotFoundException
     }
