@@ -7,7 +7,7 @@ import { AuthController } from "./auth.controller";
 import { JwtModule } from "@nestjs/jwt";
 import { config } from 'dotenv';
 import { JwtStrategy } from "./strategies/jwt.strategy";
-import { SuppliersModule } from 'src/suppliers/suppliers.module';
+import { SuppliersModule } from '../suppliers/suppliers.module';
 import { LocalSupplierStrategy } from './strategies/local-supplier.strategy';
 config();
 

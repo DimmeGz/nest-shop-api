@@ -7,10 +7,9 @@ import { Product } from "../products/product.entity";
 import { CreateOrderDto } from "./dto/create-order.dto";
 import { UpdateOrderDto } from "./dto/update-order.dto";
 import { OrderRowService } from "../order-rows/order-row.service";
-import { ProductsService } from "src/products/products.service";
-import { OrderRow } from "src/order-rows/order-row.entity";
-import { User } from "src/users/user.entity";
-import { UsersService } from "src/users/users.service";
+import { ProductsService } from "../products/products.service";
+import { OrderRow } from "../order-rows/order-row.entity";
+import { UsersService } from "../users/users.service";
 
 @Injectable()
 export class OrdersService {

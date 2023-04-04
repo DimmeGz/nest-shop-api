@@ -5,7 +5,7 @@ import { CreateProductDto } from "./dto/create-product.dto";
 import { Roles } from "../auth/decorators/roles.decorator";
 import { Role } from "../auth/enums/roles.enum";
 import { UpdateProductDto } from "./dto/update-product.dto";
-import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 
 
 

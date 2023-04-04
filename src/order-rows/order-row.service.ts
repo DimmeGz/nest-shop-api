@@ -3,9 +3,9 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { OrderRow } from "./order-row.entity";
 import { Repository } from "typeorm";
 import { Product } from "../products/product.entity";
-import { ProductsService } from "src/products/products.service";
-import { Supplier } from "src/suppliers/supplier.entity";
-import { globalVariables } from "src/utils/global-variables";
+import { ProductsService } from "../products/products.service";
+import { Supplier } from "../suppliers/supplier.entity";
+import { globalVariables } from "../utils/global-variables";
 
 @Injectable()
 export class OrderRowService {

@@ -5,7 +5,7 @@ import { Repository } from "typeorm";
 import { Rating } from "./rating.entity";
 import { CreateRatingDto } from "./dto/create-rating.dto";
 import { UpdateRatingDto } from "./dto/update-rating.dto";
-import { ProductsService } from "src/products/products.service";
+import { ProductsService } from "../products/products.service";
 
 @Injectable()
 export class RatingsService {
