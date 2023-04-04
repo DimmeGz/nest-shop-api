@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, ManyToOne } from "typeorm";
 import { Category } from "../categories/category.entity";
-import { Supplier } from "src/suppliers/supplier.entity";
+import { Supplier } from "../suppliers/supplier.entity";
 
 @Entity()
 export class Product extends BaseEntity {

@@ -12,11 +12,7 @@ import { ProductsController } from "./products.controller";
   controllers: [
     ProductsController,
   ],
-  imports: [
-    TypeOrmModule
-    .forFeature([Product])],
-    
+  imports: [TypeOrmModule.forFeature([Product])],
   exports: [ProductsService]
 })
-export class ProductsModule {
-}
+export class ProductsModule {}
