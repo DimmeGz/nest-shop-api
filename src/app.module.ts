@@ -12,6 +12,7 @@ import { OrdersModule } from "./orders/orders.module";
 import { ImagesModule } from "./images/images.module";
 import { CategoriesModule } from "./categories/categories.module";
 import { RatingsModule } from "./ratings/ratings.module";
+import { SuppliersModule } from "./suppliers/suppliers.module";
 
 @Module({
   imports: [
@@ -28,7 +29,8 @@ import { RatingsModule } from "./ratings/ratings.module";
     OrdersModule,
     ImagesModule,
     CategoriesModule,
-    RatingsModule
+    RatingsModule,
+    SuppliersModule,
   ],
   controllers: [],
   providers: [

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException, ForbiddenException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "./user.entity";
@@ -6,7 +6,6 @@ import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import * as bcrypt from "bcryptjs";
 import * as jwt from "jsonwebtoken";
-import { ForbiddenException } from "@nestjs/common/exceptions";
 
 
 @Injectable()
