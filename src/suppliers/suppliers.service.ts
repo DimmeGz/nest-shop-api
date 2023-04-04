@@ -6,6 +6,7 @@ import { JwtService } from "@nestjs/jwt";
 
 import { CreateSupplierDto } from "./dto/create-supplier.dto";
 import { Supplier } from "./supplier.entity";
+import { UpdateSupplierDto } from "./dto/update-supplier.dto";
 
 
 @Injectable()
@@ -48,6 +49,27 @@ export class SuppliersService {
             throw new BadRequestException
         }
     }
+
+    async update(id: number, updateSupplierDto: UpdateSupplierDto) {
+        try {
+          if (updateSupplierDto.password) {
+            updateSupplierDto.password = await bcrypt.hash(updateSupplierDto.password, 10);
+          }
+          await this.supplierRepository.update({ id }, updateSupplierDto);
+          return await this.supplierRepository.findOneByOrFail({ id });
+        } catch (e) {
+          throw new NotFoundException
+        }
+      }
+    
+      async remove(id: number) {
+        try {
+          const result = await this.supplierRepository.delete(id);
+          return result;
+        } catch (e) {
+          throw new NotFoundException
+        }
+      }
 
     async findByName(username: string): Promise<any> {
         try {
