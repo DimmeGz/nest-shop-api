@@ -135,7 +135,7 @@ export class OrdersService {
         const orderSum = await this.orderSumCount(newRows, order.status, queryRunner.manager)
 
         if (updateOrderDto.status === 'completed') {
-          await this.usersService.updateUserBallance(req.user.userId, order.sum, updateOrderDto.status, queryRunner.manager)
+          await this.usersService.updateUserBallance(req.user.userId, orderSum, updateOrderDto.status, queryRunner.manager)
           await this.orderRowService.updateSuppliersBallance(newRows, updateOrderDto.status, queryRunner.manager)
         }
 
