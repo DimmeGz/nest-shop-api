@@ -2,8 +2,8 @@ import { Body, Controller, Get, Param, Patch, Post, Query, Request, UseGuards } 
 import { ProductsService } from "./products.service";
 import { Product } from "./product.entity";
 import { CreateProductDto } from "./dto/create-product.dto";
-import { Roles } from "../auth/roles/roles.decorator";
-import { Role } from "../auth/roles/roles.enum";
+import { Roles } from "../auth/decorators/roles.decorator";
+import { Role } from "../auth/enums/roles.enum";
 import { UpdateProductDto } from "./dto/update-product.dto";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 

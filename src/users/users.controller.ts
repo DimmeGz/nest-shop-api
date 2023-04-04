@@ -3,8 +3,8 @@ import { UsersService } from "./users.service";
 import { User } from "./user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import { Roles } from "../auth/roles/roles.decorator";
-import { Role } from "../auth/roles/roles.enum";
+import { Roles } from "../auth/decorators/roles.decorator";
+import { Role } from "../auth/enums/roles.enum";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 
 
