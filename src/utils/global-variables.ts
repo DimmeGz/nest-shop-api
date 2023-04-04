@@ -1,3 +1,3 @@
 export const globalVariables = {
-    comission: 1
+    commission: 1
 }

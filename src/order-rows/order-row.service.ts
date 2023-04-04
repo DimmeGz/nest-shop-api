@@ -119,12 +119,12 @@ export class OrderRowService {
         const supplier = await manager.findOne(Supplier, { where: { id: productInstance.supplier.id } } )
 
         if (status === 'completed') {
-          await manager.update(Supplier, supplier.id, { ballance: supplier.ballance + (productInstance.price * row.qty) - globalVariables.comission })
+          await manager.update(Supplier, supplier.id, { ballance: supplier.ballance + (productInstance.price * row.qty) - globalVariables.commission })
         } else {
           if (supplier.ballance - (productInstance.price * row.qty) < 0){
             throw new BadRequestException
           }
-          await manager.update(Supplier, supplier.id, { ballance: supplier.ballance - (productInstance.price * row.qty) + globalVariables.comission })
+          await manager.update(Supplier, supplier.id, { ballance: supplier.ballance - (productInstance.price * row.qty) + globalVariables.commission })
         }
       }
     } catch (e) {
