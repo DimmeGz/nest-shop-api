@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
-import { Roles } from "../auth/roles/roles.decorator";
-import { Role } from "../auth/roles/roles.enum";
+import { Roles } from "../auth/decorators/roles.decorator";
+import { Role } from "../auth/enums/roles.enum";
 import { ImagesService } from "./images.service";
 import { Image } from "./image.entity";
 import { CreateImageDto } from "./dto/create-image.dto";

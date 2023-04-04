@@ -7,6 +7,7 @@ import { OrdersService } from "./orders.service";
 import { OrdersController } from "./orders.controller";
 import { OrderRowModule } from "../order-rows/order-row.module";
 import { ProductsModule } from "src/products/products.module";
+import { UsersModule } from "src/users/users.module";
 
 @Module({
   providers: [
@@ -16,6 +17,7 @@ import { ProductsModule } from "src/products/products.module";
   imports: [
     OrderRowModule,
     ProductsModule,
+    UsersModule,
     TypeOrmModule.forFeature([Order])
   ],
   exports: [OrdersService],

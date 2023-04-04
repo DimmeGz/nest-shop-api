@@ -53,21 +53,24 @@ export class ProductsService {
     }
   }
 
-  async create(createProductDto: CreateProductDto) {
+  async create(req, createProductDto: CreateProductDto) {
     try {
       const newProduct: Product = this.productRepository.create(createProductDto);
+      newProduct.supplier = req.user.userId
       if (newProduct.count === 0) {
         newProduct.isAvailable = false
       }
       return Product.save(newProduct);
     } catch (e) {
+      console.log(e);
+      
       throw new BadRequestException
     }
   }
 
-  async update(id: number, updateProductDto: UpdateProductDto) {
+  async update(req, id: number, updateProductDto: UpdateProductDto) {
     try {
-      const product = await this.productRepository.findOneOrFail({ where: { id }, relations: ["category"]  } )
+      const product = await this.productRepository.findOneOrFail({ where: { id, supplier: { id:req.user.userId } }, relations: ["category"]  } )
       Object.assign(product, updateProductDto)
       if (product.count === 0) {
         product.isAvailable = false
@@ -78,7 +81,7 @@ export class ProductsService {
     }
   }
 
-  async updateByOrderRow (orderStatus: string, productInstance: Product, qty: number) {
+  async updateByOrderRow (orderStatus: string, productInstance: Product, qty: number, manager) {
     if (orderStatus === 'completed') {
       productInstance.buyersCount += 1
     }
@@ -86,6 +89,9 @@ export class ProductsService {
     if (productInstance.count === 0) {
       productInstance.isAvailable = false
     }
-    await Product.save(productInstance)
+
+    await manager.update(Product, 
+      productInstance.id, 
+      { isAvailable: productInstance.isAvailable, buyersCount: productInstance.buyersCount, count: productInstance.count } )
   }
 }

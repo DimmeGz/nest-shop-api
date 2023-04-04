@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Param, Patch, Post, Query } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch, Post, Query, Request, UseGuards } from "@nestjs/common";
 import { ProductsService } from "./products.service";
 import { Product } from "./product.entity";
 import { CreateProductDto } from "./dto/create-product.dto";
-import { Roles } from "../auth/roles/roles.decorator";
-import { Role } from "../auth/roles/roles.enum";
+import { Roles } from "../auth/decorators/roles.decorator";
+import { Role } from "../auth/enums/roles.enum";
 import { UpdateProductDto } from "./dto/update-product.dto";
+import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 
 
 
@@ -28,15 +29,17 @@ export class ProductsController {
     return this.productsService.findOne(id);
   }
 
-  @Roles(Role.Admin)
+  @Roles(Role.Supplier)
+  @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createProductDto: CreateProductDto): Promise<any> {
-    return this.productsService.create(createProductDto);
+  create(@Request() req, @Body() createProductDto: CreateProductDto): Promise<any> {
+    return this.productsService.create(req, createProductDto);
   }
 
-  @Roles(Role.Admin)
+  @Roles(Role.Supplier)
+  @UseGuards(JwtAuthGuard)
   @Patch(":id")
-  update(@Body() updateProductDto: UpdateProductDto, @Param("id") id: number): Promise<Product> {
-    return this.productsService.update(id, updateProductDto);
+  update(@Request() req, @Body() updateProductDto: UpdateProductDto, @Param("id") id: number): Promise<Product> {
+    return this.productsService.update(req, id, updateProductDto);
   }
 }

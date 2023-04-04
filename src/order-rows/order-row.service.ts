@@ -2,9 +2,10 @@ import { BadRequestException, HttpException, HttpStatus, Injectable } from "@nes
 import { InjectRepository } from "@nestjs/typeorm";
 import { OrderRow } from "./order-row.entity";
 import { Repository } from "typeorm";
-import { CreateOrderRowDto } from "./dto/create-order-row.dto";
 import { Product } from "../products/product.entity";
 import { ProductsService } from "src/products/products.service";
+import { Supplier } from "src/suppliers/supplier.entity";
+import { globalVariables } from "src/utils/global-variables";
 
 @Injectable()
 export class OrderRowService {
@@ -12,9 +13,9 @@ export class OrderRowService {
               private readonly productsService: ProductsService) {
   }
 
-  async checkProductsAvailability (orderRows): Promise<any> {
+  async checkProductsAvailability (orderRows, manager): Promise<any> {
     for await (let row of orderRows) {
-      const productInstance = await this.productsService.findOne(row.product)
+      const productInstance = await manager.findOne(Product, { where: { id: row.product } } )
       if (!productInstance.isAvailable) {
         throw new HttpException(`Product ${productInstance.name} is not available`, HttpStatus.NOT_ACCEPTABLE)
       }
@@ -25,11 +26,11 @@ export class OrderRowService {
     return
   }
 
-  async createOrderRows(orderRows, orderId: number): Promise<OrderRow[]> {
+  async createOrderRows(orderRows, orderId: number, manager): Promise<OrderRow[]> {
     try {
       let createdRows = []
       for await (let row of orderRows) {
-        const newRow = await this.orderRowRepository.save({ qty: row.qty, product: {id:row.product}, order: {id: orderId} });
+        const newRow = await manager.save(OrderRow, { qty: row.qty, product: { id:row.product }, order: { id: orderId } } );
         createdRows.push(newRow)
       }
       return createdRows
@@ -38,12 +39,19 @@ export class OrderRowService {
     }
   }
 
-  async deleteRows(orderId: number, orderStatus: string) {
+  async getRowsByOrder (orderId: number, manager): Promise<OrderRow[]> {
     try {
-      const orderRows = await this.orderRowRepository.find({where: { order: { id: orderId } }, relations: ['product']});
+      return await manager.find(OrderRow, {where: { order: { id: orderId } }, relations: [ 'product' ] } );
+    } catch (e) {
+      throw new BadRequestException
+    }
+  }
+
+  async deleteRows(orderRows: OrderRow[], orderStatus: string, manager) {
+    try {
       for await (let row of orderRows) {
-        // update product.buyersCount
-        const productInstance = await this.productsService.findOne(row.product.id)
+        const productInstance = await manager.findOne(Product, { where: { id: row.product.id } } )
+
         if (orderStatus === 'completed') {
           productInstance.buyersCount -= 1
         }
@@ -51,36 +59,38 @@ export class OrderRowService {
           productInstance.isAvailable = true
         }
         productInstance.count += row.qty
-        await Product.save(productInstance)
-        await OrderRow.remove(row)
+        await manager.update(
+          Product, 
+          { id: productInstance.id }, 
+          { isAvailable:productInstance.isAvailable, buyersCount:productInstance.buyersCount, count: productInstance.count }
+          )
+        await manager.delete(OrderRow, {id:row.id})
       }
     } catch (e) {
       throw new BadRequestException
     }
   }
 
-  async updateProductBuyerCount (orderId: number, oldStatus: string, newStatus: string) {
+  async updateProductBuyerCount (orderRows, oldStatus: string, newStatus: string, manager) {
     try {
-      const orderRows = await this.orderRowRepository.find({where: { order: { id: orderId } }, relations: ['product']});
       for await (let row of orderRows) {
-        const productInstance = await this.productsService.findOne(row.product.id)
+        const productInstance = await manager.findOne(Product, { where: { id: row.product.id } } )
         if (oldStatus === 'completed') {
           productInstance.buyersCount -= 1
-          await Product.save(productInstance)
         }
         if (newStatus === 'completed') {
           productInstance.buyersCount += 1
-          await Product.save(productInstance)
         }
+        await manager.update(Product, productInstance.id, { buyersCount: productInstance.buyersCount } )
       }
     } catch (e) {
       throw new BadRequestException
     }
   }
 
-  async checkUpdateAvailability (orderId: number, newRows: Array<any>) {
-    try {      
-      const orderRows = await this.orderRowRepository.find({where: { order: { id: orderId } }, relations: ['product']});
+  async checkUpdateAvailability (orderId: number, newRows: Array<any>, manager) {
+    try {
+      const orderRows = await manager.find(OrderRow, {where: { order: { id: orderId } }, relations: [ 'product' ] } );
 
       let products = new Object
       for (let orderRow of orderRows) {      
@@ -89,7 +99,7 @@ export class OrderRowService {
       }
       
       for (let newRow of newRows) {
-        const productInstance = await this.productsService.findOne(newRow.productId)
+        const productInstance = await manager.findOne(Product, { where: { id: newRow.productId } } )
         if (productInstance.id in products) {
           if (newRow.qty > productInstance.count + products[productInstance.id]) {
             throw new HttpException(`Too much ${productInstance.name}`, HttpStatus.NOT_ACCEPTABLE);
@@ -98,6 +108,27 @@ export class OrderRowService {
       }
     } catch (e) {
       throw e;
+    }
+  }
+
+  async updateSuppliersBallance (rows: OrderRow[], status, manager) {
+    try {
+      for (let row of rows) {
+        const productInstance = await manager.findOne(Product, { where: { id: row.product.id }, relations: ["supplier"] } )
+
+        const supplier = await manager.findOne(Supplier, { where: { id: productInstance.supplier.id } } )
+
+        if (status === 'completed') {
+          await manager.update(Supplier, supplier.id, { ballance: supplier.ballance + (productInstance.price * row.qty) - globalVariables.commission })
+        } else {
+          if (supplier.ballance - (productInstance.price * row.qty) < 0){
+            throw new BadRequestException
+          }
+          await manager.update(Supplier, supplier.id, { ballance: supplier.ballance - (productInstance.price * row.qty) + globalVariables.commission })
+        }
+      }
+    } catch (e) {
+
     }
   }
 }
