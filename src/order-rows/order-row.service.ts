@@ -5,6 +5,7 @@ import { Repository } from "typeorm";
 import { Product } from "../products/product.entity";
 import { ProductsService } from "src/products/products.service";
 import { Supplier } from "src/suppliers/supplier.entity";
+import { globalVariables } from "src/utils/global-variables";
 
 @Injectable()
 export class OrderRowService {
@@ -118,12 +119,12 @@ export class OrderRowService {
         const supplier = await manager.findOne(Supplier, { where: { id: productInstance.supplier.id } } )
 
         if (status === 'completed') {
-          await manager.update(Supplier, supplier.id, { ballance: supplier.ballance + (productInstance.price * row.qty) })
+          await manager.update(Supplier, supplier.id, { ballance: supplier.ballance + (productInstance.price * row.qty) - globalVariables.comission })
         } else {
           if (supplier.ballance - (productInstance.price * row.qty) < 0){
             throw new BadRequestException
           }
-          await manager.update(Supplier, supplier.id, { ballance: supplier.ballance - (productInstance.price * row.qty) })
+          await manager.update(Supplier, supplier.id, { ballance: supplier.ballance - (productInstance.price * row.qty) + globalVariables.comission })
         }
       }
     } catch (e) {
