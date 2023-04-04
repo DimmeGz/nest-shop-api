@@ -7,7 +7,6 @@ import { Supplier } from "./supplier.entity";
 import { SuppliersController } from "./suppliers.controller";
 import { SuppliersService } from "./suppliers.service";
 
-import { JwtModule } from "@nestjs/jwt";
 import { config } from 'dotenv';
 config();
 
@@ -17,15 +16,7 @@ config();
     SupplierExistsRule,
     ],
   controllers: [SuppliersController],
-  imports: [
-    TypeOrmModule.forFeature([Supplier]),
-    JwtModule.register(
-      {
-        secret: process.env.JWT_SECRET, 
-        signOptions: { expiresIn: '2 days' },
-      }
-    )
-  ],
+  imports: [TypeOrmModule.forFeature([Supplier])],
   exports: [SuppliersService],
 })
 export class SuppliersModule {

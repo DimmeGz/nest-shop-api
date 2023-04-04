@@ -2,7 +2,6 @@ import { BadRequestException, ForbiddenException, Injectable, NotFoundException 
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import * as bcrypt from "bcryptjs";
-import { JwtService } from "@nestjs/jwt";
 
 import { CreateSupplierDto } from "./dto/create-supplier.dto";
 import { Supplier } from "./supplier.entity";
@@ -12,8 +11,7 @@ import { UpdateSupplierDto } from "./dto/update-supplier.dto";
 @Injectable()
 export class SuppliersService {
     constructor(
-        @InjectRepository(Supplier) private supplierRepository: Repository<Supplier>, 
-        private jwtService: JwtService) {}
+        @InjectRepository(Supplier) private supplierRepository: Repository<Supplier>) {}
 
     async findAll(): Promise<Supplier[]> {
         try {
@@ -40,10 +38,7 @@ export class SuppliersService {
             newSupplier.password = await bcrypt.hash(newSupplier.password, 10);
             await Supplier.save(newSupplier);
 
-            const payload = { id: newSupplier.id, role: 'supplier' };
-            const token = this.jwtService.sign(payload)
-
-            return token;
+            return newSupplier;
         } catch (e) {
             console.log(e);
             throw new BadRequestException

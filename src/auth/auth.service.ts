@@ -4,6 +4,7 @@ import * as bcrypt from "bcryptjs";
 import { JwtService } from "@nestjs/jwt";
 import { SuppliersService } from "src/suppliers/suppliers.service";
 import { CreateUserDto } from "src/users/dto/create-user.dto";
+import { CreateSupplierDto } from "src/suppliers/dto/create-supplier.dto";
 
 @Injectable()
 export class AuthService {
@@ -43,6 +44,15 @@ export class AuthService {
     return {
       access_token: this.jwtService.sign(payload),
     };
+  }
+
+  async supplierRegister(createUserDto: CreateSupplierDto) {
+    const user = await this.suppliersService.create(createUserDto)
+
+    const payload = { id: user.id, role: 'supplier' };
+    const token = this.jwtService.sign(payload)
+
+    return token
   }
 
   async validateSupplier(username: string, pass: string): Promise<any> {

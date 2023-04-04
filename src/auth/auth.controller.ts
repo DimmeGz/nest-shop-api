@@ -3,6 +3,7 @@ import { LocalAuthGuard } from "./guards/local-auth.guard";
 import { LocalSupplierAuthGuard } from "./guards/local-supplier-auth.guard";
 import { AuthService } from "./auth.service";
 import { CreateUserDto } from "src/users/dto/create-user.dto";
+import { CreateSupplierDto } from "src/suppliers/dto/create-supplier.dto";
 
 @Controller("auth")
 export class AuthController {
@@ -23,5 +24,10 @@ export class AuthController {
   @Post('/supplier_login')
   async supplierLogin(@Request() req) {
     return this.authService.supplierLogin(req.user);
+  }
+
+  @Post('/supplier_register')
+  createSupplier(@Body() createSupplierDto: CreateSupplierDto): Promise<string> {
+    return this.authService.supplierRegister(createSupplierDto);
   }
 }

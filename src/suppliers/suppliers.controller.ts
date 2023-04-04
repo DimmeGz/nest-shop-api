@@ -26,11 +26,6 @@ export class SuppliersController {
       return this.suppliersService.findOne(req, id);
   }
 
-  @Post()
-  create(@Body() createSupplierDto: CreateSupplierDto): Promise<string> {
-    return this.suppliersService.create(createSupplierDto);
-  }
-
   @Roles(Role.Admin, Role.Owner)
   @Patch(":id")
   update(@Body() updateSupplierDto: UpdateSupplierDto, @Param("id") id: number): Promise<Supplier> {
