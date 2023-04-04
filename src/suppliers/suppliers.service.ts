@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import * as bcrypt from "bcryptjs";
@@ -21,6 +21,17 @@ export class SuppliersService {
             throw new BadRequestException
         }
     }
+
+    async findOne(req, id: number): Promise<Supplier> {
+        try {
+          if (req.user.userId === +id) {
+            return await this.supplierRepository.findOneByOrFail({ id });
+          }
+          throw new ForbiddenException
+        } catch (e) {
+          throw new BadRequestException
+        }
+      }
 
     async create(createSupplierDto: CreateSupplierDto) {
         try {

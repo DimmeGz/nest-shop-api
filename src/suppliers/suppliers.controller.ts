@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import { Body, Controller, Get, Post, UseGuards, Request, Param } from "@nestjs/common";
+import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import { Roles } from "src/auth/roles/roles.decorator";
 import { Role } from "src/auth/roles/roles.enum";
 import { CreateSupplierDto } from "./dto/create-supplier.dto";
@@ -16,6 +17,12 @@ export class SuppliersController {
   @Roles(Role.Admin)
   getAll(): Promise<Supplier[]> {
     return this.suppliersService.findAll();
+  }
+
+  @Get(":id")
+  @UseGuards(JwtAuthGuard)
+  getOne(@Request() req, @Param("id") id: number): Promise<Supplier> {
+      return this.suppliersService.findOne(req, id);
   }
 
   @Post()
