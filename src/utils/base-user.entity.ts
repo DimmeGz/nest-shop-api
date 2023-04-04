@@ -15,4 +15,7 @@ export abstract class BaseUser extends BaseEntity {
 
   @Column({ unique: true })
   email: string;
+
+  @Column({ default: 0 })
+  ballance: number
 }
