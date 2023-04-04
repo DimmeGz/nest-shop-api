@@ -10,5 +10,11 @@ export class SuppliersService {
   constructor(@InjectRepository(Supplier) private supplierRepository: Repository<Supplier>) {
   }
 
-  
+  async checkUnique(property: Object): Promise<Supplier> {
+    try {
+      return await this.supplierRepository.findOneBy(property);
+    } catch (e) {
+      throw new BadRequestException
+    }
+  }
 }

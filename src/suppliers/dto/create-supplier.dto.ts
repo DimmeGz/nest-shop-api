@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsEmail, IsString, MinLength, IsPhoneNumber, Validate } from "class-validator";
-import { UserExistsRule } from "../../middleware/unique.validator";
+import { SupplierExistsRule } from "../../middleware/unique.validator";
 
 export class CreateSupplierDto {
   @IsNotEmpty()
@@ -14,11 +14,11 @@ export class CreateSupplierDto {
 
   @IsNotEmpty()
   @IsPhoneNumber('UA')
-//   @Validate(UserExistsRule)
+  @Validate(SupplierExistsRule)
   readonly phone: string
 
   @IsNotEmpty()
   @IsEmail()
-//   @Validate(UserExistsRule)
+  @Validate(SupplierExistsRule)
   readonly email: string
 }
