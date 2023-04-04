@@ -88,4 +88,16 @@ export class UsersService {
       throw new BadRequestException
     }
   }
+
+  async updateUserBallance (userId: number, orderSum: number, status: string, manager) {
+    const user = await manager.findOne(User, { where: { id: userId } })
+    if (status === 'completed') {
+      if (user.ballance - orderSum < 0){
+        throw new BadRequestException
+      }
+      await manager.update(User, userId, {ballance: user.ballance - orderSum})
+    } else {
+      await manager.update(User, userId, {ballance: user.ballance + orderSum})
+    }
+  }
 }

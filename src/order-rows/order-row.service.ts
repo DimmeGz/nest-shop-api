@@ -116,10 +116,13 @@ export class OrderRowService {
         const productInstance = await manager.findOne(Product, { where: { id: row.product.id }, relations: ["supplier"] } )
 
         const supplier = await manager.findOne(Supplier, { where: { id: productInstance.supplier.id } } )
-        
+
         if (status === 'completed') {
           await manager.update(Supplier, supplier.id, { ballance: supplier.ballance + (productInstance.price * row.qty) })
         } else {
+          if (supplier.ballance - (productInstance.price * row.qty) < 0){
+            throw new BadRequestException
+          }
           await manager.update(Supplier, supplier.id, { ballance: supplier.ballance - (productInstance.price * row.qty) })
         }
       }

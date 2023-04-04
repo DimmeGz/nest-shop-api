@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DataSource, Repository } from "typeorm";
 
@@ -10,12 +10,14 @@ import { OrderRowService } from "../order-rows/order-row.service";
 import { ProductsService } from "src/products/products.service";
 import { OrderRow } from "src/order-rows/order-row.entity";
 import { User } from "src/users/user.entity";
+import { UsersService } from "src/users/users.service";
 
 @Injectable()
 export class OrdersService {
   constructor(@InjectRepository(Order) private ordersRepository: Repository<Order>,
               private readonly orderRowService: OrderRowService,
               private readonly productsService: ProductsService, 
+              private readonly usersService: UsersService, 
               private dataSource: DataSource) {
   }
   async findAll(req, query): Promise<any> {
@@ -43,7 +45,7 @@ export class OrdersService {
         data: result
       }
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+      throw new BadRequestException;
     }
   }
 
@@ -52,7 +54,7 @@ export class OrdersService {
       return await this.ordersRepository
           .findOneOrFail({where: { id, user: { id: req.user.userId } }, relations: ['user', 'orderRows', 'orderRows.product'] });
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.NOT_FOUND);
+      throw new NotFoundException;
     }
   }
 
@@ -85,9 +87,7 @@ export class OrdersService {
       newOrder.sum = orderSum
 
       if (newOrder.status === 'completed') {
-        const user = await queryRunner.manager.findOne(User, { where: { id: req.user.userId } })
-        await queryRunner.manager.update(User, req.user.userId, {ballance: user.ballance - orderSum})
-        await this.orderRowService.updateSuppliersBallance(newRows, newOrder.status, queryRunner.manager)
+        await this.usersService.updateUserBallance(req.user.userId, orderSum, newOrder.status, queryRunner.manager)
       }
 
       await queryRunner.manager.update(Order, newOrder.id, {sum: orderSum})
@@ -96,7 +96,7 @@ export class OrdersService {
       return newOrder
     } catch (e) {
       await queryRunner.rollbackTransaction();
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+      throw new BadRequestException;
     } finally {
       await queryRunner.release();
     }
@@ -117,13 +117,7 @@ export class OrdersService {
 
           await this.orderRowService.updateSuppliersBallance(orderRows, updateOrderDto.status, queryRunner.manager)
           
-          const user = await queryRunner.manager.findOne(User, {where: {id: req.user.userId}})
-          
-          if (updateOrderDto.status === 'completed') {
-            await queryRunner.manager.update(User, req.user.userId, {ballance: user.ballance - order.sum})
-          } else {
-            await queryRunner.manager.update(User, req.user.userId, {ballance: user.ballance + order.sum})
-          }
+          await this.usersService.updateUserBallance(req.user.userId, order.sum, updateOrderDto.status, queryRunner.manager)
         }
 
         await queryRunner.manager.update(Order, order.id, updateOrderDto)
@@ -132,8 +126,7 @@ export class OrdersService {
         const orderRows = await this.orderRowService.getRowsByOrder (order.id, queryRunner.manager)
 
         if (order.status === 'completed') {
-          const user = await queryRunner.manager.findOne(User, { where: { id: req.user.userId } })
-          await queryRunner.manager.update(User, req.user.userId, {ballance: user.ballance + order.sum})
+          await this.usersService.updateUserBallance(req.user.userId, order.sum, 'delete', queryRunner.manager)
           await this.orderRowService.updateSuppliersBallance(orderRows, 'deleted', queryRunner.manager)
         }
 
@@ -142,8 +135,7 @@ export class OrdersService {
         const orderSum = await this.orderSumCount(newRows, order.status, queryRunner.manager)
 
         if (updateOrderDto.status === 'completed') {
-          const user = await queryRunner.manager.findOne(User, { where: { id: req.user.userId } })
-          await queryRunner.manager.update(User, req.user.userId, {ballance: user.ballance - orderSum})
+          await this.usersService.updateUserBallance(req.user.userId, order.sum, updateOrderDto.status, queryRunner.manager)
           await this.orderRowService.updateSuppliersBallance(newRows, updateOrderDto.status, queryRunner.manager)
         }
 
@@ -159,7 +151,7 @@ export class OrdersService {
       console.log(e);
       
       await queryRunner.rollbackTransaction();
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+      throw new BadRequestException;
     } finally {
       await queryRunner.release();
     }
@@ -175,8 +167,7 @@ export class OrdersService {
 
       const orderRows = await this.orderRowService.getRowsByOrder (order.id, queryRunner.manager)
       if (order.status === 'completed') {
-        const user = await queryRunner.manager.findOne(User, { where: { id: req.user.userId } })
-        await queryRunner.manager.update(User, req.user.userId, {ballance: user.ballance + order.sum})
+        await this.usersService.updateUserBallance(req.user.userId, order.sum, 'deleted', queryRunner.manager)
         await this.orderRowService.updateSuppliersBallance(orderRows, 'deleted', queryRunner.manager)
       }
 
@@ -187,7 +178,7 @@ export class OrdersService {
       return { deleted: id };
     } catch (e) {
       await queryRunner.rollbackTransaction();
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+      throw new BadRequestException;
     } finally {
       await queryRunner.release();
     }
