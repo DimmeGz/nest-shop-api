@@ -15,12 +15,7 @@ config();
     UserExistsRule,
     ],
   controllers: [UsersController],
-  imports: [
-    TypeOrmModule.forFeature([User]),
-    JwtModule.register({
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '2 days' },
-  })],
+  imports: [TypeOrmModule.forFeature([User])],
   exports: [UsersService],
 })
 export class UsersModule {

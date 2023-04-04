@@ -25,10 +25,10 @@ export class UsersController {
       return this.userService.findOne(req, id);
   }
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto): Promise<string> {
-    return this.userService.create(createUserDto);
-  }
+  // @Post()
+  // create(@Body() createUserDto: CreateUserDto): Promise<string> {
+  //   return this.userService.create(createUserDto);
+  // }
 
   @Roles(Role.Admin)
   @Delete(":id")

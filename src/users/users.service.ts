@@ -11,9 +11,7 @@ import { JwtService } from "@nestjs/jwt";
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User) private userRepository: Repository<User>, 
-    private jwtService: JwtService) {
-  }
+    @InjectRepository(User) private userRepository: Repository<User>) {}
 
   async findAll(): Promise<User[]> {
     try {
@@ -41,10 +39,7 @@ export class UsersService {
       newUser.role = "user";
       await User.save(newUser);
 
-      const payload = { id: newUser.id, role: newUser.role };
-      const token = this.jwtService.sign(payload)
-
-      return token;
+      return newUser;
     } catch (e) {
       console.log(e);
       
