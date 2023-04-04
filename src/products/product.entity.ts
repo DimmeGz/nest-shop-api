@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, ManyToOne } from "typeorm";
 import { Category } from "../categories/category.entity";
+import { Supplier } from "src/suppliers/supplier.entity";
 
 @Entity()
 export class Product extends BaseEntity {
@@ -29,4 +30,7 @@ export class Product extends BaseEntity {
 
   @ManyToOne(() => Category, category => category.id)
   category: Category
+
+  @ManyToOne(() => Supplier, supplier => supplier.id)
+  supplier: Supplier
 }
