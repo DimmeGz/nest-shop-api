@@ -5,7 +5,6 @@ import { User } from "./user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import * as bcrypt from "bcryptjs";
-import * as jwt from "jsonwebtoken";
 import { JwtService } from "@nestjs/jwt";
 
 
@@ -42,9 +41,7 @@ export class UsersService {
       newUser.role = "user";
       await User.save(newUser);
 
-      const JWTKey = process.env.JWT_SECRET;
       const payload = { id: newUser.id, role: newUser.role };
-      // const token = jwt.sign({ user: payload }, JWTKey!);
       const token = this.jwtService.sign(payload)
 
       return token;

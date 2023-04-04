@@ -7,11 +7,14 @@ import { AuthController } from "./auth.controller";
 import { JwtModule } from "@nestjs/jwt";
 import { config } from 'dotenv';
 import { JwtStrategy } from "./strategies/jwt.strategy";
+import { SuppliersModule } from 'src/suppliers/suppliers.module';
+import { LocalSupplierStrategy } from './strategies/local-supplier.strategy';
 config();
 
 @Module({
   imports: [
     UsersModule,
+    SuppliersModule,
     PassportModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,
@@ -19,7 +22,7 @@ config();
     })
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalSupplierStrategy, LocalStrategy, JwtStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}
