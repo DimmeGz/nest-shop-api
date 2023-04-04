@@ -6,11 +6,14 @@ import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import * as bcrypt from "bcryptjs";
 import * as jwt from "jsonwebtoken";
+import { JwtService } from "@nestjs/jwt";
 
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectRepository(User) private userRepository: Repository<User>) {
+  constructor(
+    @InjectRepository(User) private userRepository: Repository<User>, 
+    private jwtService: JwtService) {
   }
 
   async findAll(): Promise<User[]> {
@@ -41,10 +44,13 @@ export class UsersService {
 
       const JWTKey = process.env.JWT_SECRET;
       const payload = { id: newUser.id, role: newUser.role };
-      const token = jwt.sign({ user: payload }, JWTKey!);
+      // const token = jwt.sign({ user: payload }, JWTKey!);
+      const token = this.jwtService.sign(payload)
 
       return token;
     } catch (e) {
+      console.log(e);
+      
       throw new BadRequestException
     }
   }

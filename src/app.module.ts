@@ -13,6 +13,7 @@ import { ImagesModule } from "./images/images.module";
 import { CategoriesModule } from "./categories/categories.module";
 import { RatingsModule } from "./ratings/ratings.module";
 import { SuppliersModule } from "./suppliers/suppliers.module";
+import { CommentsModule } from "./comments/comments.module";
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { SuppliersModule } from "./suppliers/suppliers.module";
     ProductsModule,
     OrdersModule,
     ImagesModule,
+    CommentsModule,
     CategoriesModule,
     RatingsModule,
     SuppliersModule,
