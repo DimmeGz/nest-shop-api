@@ -36,9 +36,10 @@ export class ProductsController {
     return this.productsService.create(req, createProductDto);
   }
 
-  @Roles(Role.Admin)
+  @Roles(Role.Supplier)
+  @UseGuards(JwtAuthGuard)
   @Patch(":id")
-  update(@Body() updateProductDto: UpdateProductDto, @Param("id") id: number): Promise<Product> {
-    return this.productsService.update(id, updateProductDto);
+  update(@Request() req, @Body() updateProductDto: UpdateProductDto, @Param("id") id: number): Promise<Product> {
+    return this.productsService.update(req, id, updateProductDto);
   }
 }

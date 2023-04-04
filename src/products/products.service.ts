@@ -68,9 +68,9 @@ export class ProductsService {
     }
   }
 
-  async update(id: number, updateProductDto: UpdateProductDto) {
+  async update(req, id: number, updateProductDto: UpdateProductDto) {
     try {
-      const product = await this.productRepository.findOneOrFail({ where: { id }, relations: ["category"]  } )
+      const product = await this.productRepository.findOneOrFail({ where: { id, supplier: { id:req.user.userId } }, relations: ["category"]  } )
       Object.assign(product, updateProductDto)
       if (product.count === 0) {
         product.isAvailable = false
