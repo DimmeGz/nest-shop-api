@@ -14,14 +14,6 @@ export class RedisClientService implements OnModuleInit, OnModuleDestroy {
     return await this.client.set(key, value, { EX: ttl });
   }
 
-  async get(key) {
-    try {
-        return await this.client.get(key);
-    } catch (e) {
-        throw e
-    }
-  }
-
   async onModuleDestroy() {
     await this.client.quit();
   }
