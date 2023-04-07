@@ -14,7 +14,7 @@ export class AppService {
       const cexio = new Cexio();
       for (let currency of globalVariables.currencies) {
         const res = await cexio.ticker(currency, globalVariables.baseCurrency);
-        await this.redisClientService.set(res.pair, res.ask, 30);
+        await this.redisClientService.set(res.pair, res.ask, -1);
       }
     } catch (e) {
       console.log(e);
