@@ -9,8 +9,9 @@ import {
 import { Logger } from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { globalVariables } from './utils/global-variables';
 import { RedisClientService } from './redis-client/redis-client.service';
+import { config } from 'dotenv';
+config();
 
 @WebSocketGateway(3080, {
   namespace: '/api/get_currencies',
@@ -29,8 +30,8 @@ export class AppGateway
   @Cron(CronExpression.EVERY_10_SECONDS)
   async handleCron() {
     let response = [];
-    for (let currency of globalVariables.currencies) {
-      const currenciesPair = `${currency}:${globalVariables.baseCurrency}`;
+    for (let currency of process.env.CURRENCIES.split(',')) {
+      const currenciesPair = `${currency}:${process.env.BASECURRENCY}`;
       const rate = await this.redisClientService.get(currenciesPair);
       const obj = {};
       obj[currenciesPair] = rate;

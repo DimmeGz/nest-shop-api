@@ -26,6 +26,7 @@
     "@nestjs/microservices": "^9.4.0",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/schedule": "^2.2.1",
+    "dotenv": "^16.0.3",
     "node-crypto-api": "^1.0.8",
     "redis": "^4.6.5",
     "reflect-metadata": "^0.1.13",

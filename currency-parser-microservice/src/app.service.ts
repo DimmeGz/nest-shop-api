@@ -2,7 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import {Cexio} from 'node-crypto-api';
 import { RedisClientService } from './redis-client/redis-client.service';
-import { globalVariables } from './utils/global-variables';
+import { config } from 'dotenv';
+config();
+
 
 @Injectable()
 export class AppService {
@@ -12,8 +14,8 @@ export class AppService {
   async handleCron() {
     try {
       const cexio = new Cexio();
-      for (let currency of globalVariables.currencies) {
-        const res = await cexio.ticker(currency, globalVariables.baseCurrency);
+      for (let currency of process.env.CURRENCIES.split(',')) {
+        const res = await cexio.ticker(currency, process.env.BASECURRENCY);
         await this.redisClientService.set(res.pair, res.ask);
       }
     } catch (e) {
