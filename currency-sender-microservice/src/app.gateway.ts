@@ -15,9 +15,6 @@ config();
 
 @WebSocketGateway(3080, {
   namespace: '/api/get_currencies',
-  cors: {
-    origin: '*',
-  },
 })
 export class AppGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
