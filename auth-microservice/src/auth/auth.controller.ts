@@ -14,11 +14,7 @@ export class AuthController {
 
 @EventPattern('login')
   async login(req) {
-    try {
-      return await this.authService.login(req.data, req.type)
-    } catch (e) {
-      throw e
-    }
+    return await this.authService.login(req.data, req.type)
   }
 
   @EventPattern('get-user')
