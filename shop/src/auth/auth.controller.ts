@@ -11,7 +11,7 @@ export class AuthController {
 
   @Post('/login')
   async login(@Request() req): Promise<string> {
-    return await this.client.send('user-login', req.body).toPromise();
+    return await this.client.send('login', {data: req.body, type: 'user'}).toPromise();
   }
   
   @Post('/register')
@@ -21,7 +21,7 @@ export class AuthController {
 
   @Post('/supplier_login')
   async supplierLogin(@Request() req) {
-    return await this.client.send('supplier-login', req.body).toPromise();
+    return await this.client.send('login', {data: req.body, type: 'supplier'}).toPromise();
   }
 
   @Post('/supplier_register')

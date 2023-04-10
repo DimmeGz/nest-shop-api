@@ -13,32 +13,18 @@ export class AuthService {
     private jwtService: JwtService
   ) { }
 
-  async userLogin(data) {
-    try {
-      const user = await this.usersService.findByAuthField(data.authField)
-      if (user) {
-        const validate = await bcrypt.compare(data.password, user.password);
-
-        if (validate) {
-          const payload = { id: user.id, role: user.role };
-          return {
-            access_token: this.jwtService.sign(payload),
-          };
-        }
-      }
-      throw new UnauthorizedException('Wrong login or password');
-    } catch (e) {
-      throw e
+  async login(data, userType) {
+    let user
+    if (userType === 'supplier') {
+      user = await this.suppliersService.findByAuthField(data.authField)
+    } else if (userType === 'user') {
+      user = await this.usersService.findByAuthField(data.authField)
     }
-  }
-
-  async supplierLogin(data) {
-    const supplier = await this.suppliersService.findByAuthField(data.authField)
-    if (supplier) {
-      const validate = await bcrypt.compare(data.password, supplier.password);
+    if (user) {
+      const validate = await bcrypt.compare(data.password, user.password);
 
       if (validate) {
-        const payload = { id: supplier.id, role: supplier.role };
+        const payload = { id: user.id, role: user.role };
         return {
           access_token: this.jwtService.sign(payload),
         };

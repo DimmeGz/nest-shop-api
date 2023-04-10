@@ -9,19 +9,10 @@ export class AuthController {
     private readonly authService: AuthService,
   ) { }
 
-  @EventPattern('user-login')
-  async userLogin(data) {
+@EventPattern('login')
+  async login(req) {
     try {
-      return await this.authService.userLogin(data)
-    } catch (e) {
-      return e
-    }
-  }
-
-  @EventPattern('supplier-login')
-  async supplierLogin(data) {
-    try {
-      return await this.authService.supplierLogin(data)
+      return await this.authService.login(req.data, req.type)
     } catch (e) {
       return e
     }
