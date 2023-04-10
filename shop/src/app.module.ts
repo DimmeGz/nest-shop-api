@@ -14,15 +14,22 @@ import { CategoriesModule } from "./categories/categories.module";
 import { RatingsModule } from "./ratings/ratings.module";
 import { SuppliersModule } from "./suppliers/suppliers.module";
 import { CommentsModule } from "./comments/comments.module";
+import { config } from 'dotenv';
+config();
+
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
-      type: "sqlite",
-      database: "db.sqlite",
+      type: 'postgres',
+      host: process.env.DB_HOST,
+      port: +process.env.DB_PORT,
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
       autoLoadEntities: true,
-      synchronize: true
+      synchronize: true,
     }),
     UsersModule,
     AuthModule,
