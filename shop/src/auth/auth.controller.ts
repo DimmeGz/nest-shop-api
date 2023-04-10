@@ -1,18 +1,18 @@
-import { Controller, Request, Post, UseGuards, Body } from "@nestjs/common";
-import { LocalAuthGuard } from "./guards/local-auth.guard";
+import { Controller, Request, Post, UseGuards, Body, Inject } from "@nestjs/common";
 import { LocalSupplierAuthGuard } from "./guards/local-supplier-auth.guard";
 import { AuthService } from "./auth.service";
 import { CreateUserDto } from "../users/dto/create-user.dto";
 import { CreateSupplierDto } from "../suppliers/dto/create-supplier.dto";
+import { ClientProxy } from "@nestjs/microservices";
 
 @Controller("auth")
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, 
+    @Inject('AUTH_MICROSERVICE') private readonly client: ClientProxy) {}
 
-  @UseGuards(LocalAuthGuard)
   @Post('/login')
-  async login(@Request() req) {
-    return this.authService.login(req.user);
+  async login(@Request() req): Promise<string> {
+    return await this.client.send('login', req.body).toPromise();
   }
   
   @Post('/register')
