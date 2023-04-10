@@ -1,5 +1,5 @@
-import { BadRequestException, Controller } from '@nestjs/common';
-import { EventPattern } from '@nestjs/microservices';
+import { Controller } from '@nestjs/common';
+import { EventPattern, RpcException } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
 
@@ -17,7 +17,7 @@ export class AuthController {
     try {
       return await this.authService.login(req.data, req.type)
     } catch (e) {
-      return e
+      throw e
     }
   }
 
@@ -27,7 +27,7 @@ export class AuthController {
     if (userData) {
       return userData
     }
-    throw new BadRequestException('Wrong access token')
+    throw new RpcException('Wrong access token');
   }
 
   @EventPattern('sign-in')

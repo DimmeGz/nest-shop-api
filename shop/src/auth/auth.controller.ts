@@ -1,4 +1,4 @@
-import { Controller, Request, Post, UseGuards, Body, Inject } from "@nestjs/common";
+import { Controller, Request, Post, Body, Inject, BadRequestException } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { CreateUserDto } from "../users/dto/create-user.dto";
 import { CreateSupplierDto } from "../suppliers/dto/create-supplier.dto";
@@ -11,7 +11,11 @@ export class AuthController {
 
   @Post('/login')
   async login(@Request() req): Promise<string> {
-    return await this.client.send('login', {data: req.body, type: 'user'}).toPromise();
+    try {
+      return await this.client.send('login', {data: req.body, type: 'user'}).toPromise();
+    } catch (e) {
+      throw new BadRequestException(e.message)
+    }
   }
   
   @Post('/register')

@@ -1,8 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from "bcryptjs";
 import { JwtService } from '@nestjs/jwt';
 import { SuppliersService } from '../suppliers/suppliers.service';
+import { RpcException } from '@nestjs/microservices';
 
 
 @Injectable()
@@ -30,7 +31,7 @@ export class AuthService {
         };
       }
     }
-    throw new UnauthorizedException('Wrong login or password');
+    throw new RpcException('Wrong access token');
   } catch (e) {
     throw e
   }
