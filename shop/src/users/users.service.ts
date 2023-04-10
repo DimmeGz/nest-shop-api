@@ -64,14 +64,6 @@ export class UsersService {
     }
   }
 
-  async findByName(username: string): Promise<any> {
-    try {
-      return await this.userRepository.findOneByOrFail([{ phone: username }, { email: username }]);
-    }catch (e) {
-      throw new NotFoundException
-    }
-  }
-
   async checkUnique(property: Object): Promise<User> {
     try {
       return await this.userRepository.findOneBy(property);

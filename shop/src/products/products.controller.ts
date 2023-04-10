@@ -5,8 +5,6 @@ import { CreateProductDto } from "./dto/create-product.dto";
 import { Roles } from "../auth/decorators/roles.decorator";
 import { Role } from "../auth/enums/roles.enum";
 import { UpdateProductDto } from "./dto/update-product.dto";
-import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
-
 
 
 @Controller("products")
@@ -30,14 +28,12 @@ export class ProductsController {
   }
 
   @Roles(Role.Supplier)
-  @UseGuards(JwtAuthGuard)
   @Post()
   create(@Request() req, @Body() createProductDto: CreateProductDto): Promise<any> {
     return this.productsService.create(req, createProductDto);
   }
 
   @Roles(Role.Supplier)
-  @UseGuards(JwtAuthGuard)
   @Patch(":id")
   update(@Request() req, @Body() updateProductDto: UpdateProductDto, @Param("id") id: number): Promise<Product> {
     return this.productsService.update(req, id, updateProductDto);

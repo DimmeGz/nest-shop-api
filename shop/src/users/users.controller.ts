@@ -4,7 +4,7 @@ import { User } from "./user.entity";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { Roles } from "../auth/decorators/roles.decorator";
 import { Role } from "../auth/enums/roles.enum";
-import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { IsAuthorized } from "../auth/guards/is-authorized.guard";
 
 
 @Controller("users")
@@ -19,7 +19,7 @@ export class UsersController {
   }
 
   @Get(":id")
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(IsAuthorized)
   getOne(@Request() req, @Param("id") id: number): Promise<User> {
       return this.userService.findOne(req, id);
   }
@@ -31,7 +31,7 @@ export class UsersController {
   }
 
   @Roles(Role.Admin, Role.User)
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(IsAuthorized)
   @Patch(":id")
   update(@Body() updateUserDto: UpdateUserDto, @Param("id") id: number): Promise<User> {
     return this.userService.update(id, updateUserDto);

@@ -1,20 +1,21 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
 import { UsersModule } from '../users/users.module';
-import { AuthController } from "./auth.controller";
-import { RabbitMQModule } from '../rabbit-mq/rabbit-mq.module';
-import { config } from 'dotenv';
+import { AuthService } from './auth.service';
+import { AuthController } from './auth.controller';
+import { JwtModule } from '@nestjs/jwt';
 import { SuppliersModule } from '../suppliers/suppliers.module';
-config();
+require('dotenv').config()
 
 @Module({
   imports: [
-    RabbitMQModule,
     UsersModule,
     SuppliersModule,
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '2 days' },
+    })
   ],
   controllers: [AuthController],
   providers: [AuthService],
-  exports: [AuthService],
 })
 export class AuthModule {}
