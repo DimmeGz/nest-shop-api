@@ -6,16 +6,11 @@ import { ClientProxy } from "@nestjs/microservices";
 
 @Controller("auth")
 export class AuthController {
-  constructor(private authService: AuthService, 
-    @Inject('AUTH_MICROSERVICE') private readonly client: ClientProxy) {}
+  constructor(private authService: AuthService) {}
 
   @Post('/login')
   async login(@Request() req): Promise<string> {
-    try {
-      return await this.client.send('login', {data: req.body, type: 'user'}).toPromise();
-    } catch (e) {
-      throw new BadRequestException(e.message)
-    }
+    return this.authService.login(req.body, 'user');
   }
   
   @Post('/register')
@@ -25,7 +20,7 @@ export class AuthController {
 
   @Post('/supplier_login')
   async supplierLogin(@Request() req) {
-    return await this.client.send('login', {data: req.body, type: 'supplier'}).toPromise();
+    return this.authService.login(req.body, 'supplier');
   }
 
   @Post('/supplier_register')
