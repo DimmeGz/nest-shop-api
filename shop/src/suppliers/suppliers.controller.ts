@@ -1,12 +1,12 @@
 import { Body, Controller, Get, Post, UseGuards, Request, Param, Patch, Delete } from "@nestjs/common";
-import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { Roles } from "../auth/decorators/roles.decorator";
 import { Role } from "../auth/enums/roles.enum";
-import { CreateSupplierDto } from "./dto/create-supplier.dto";
+
 import { UpdateSupplierDto } from "./dto/update-supplier.dto";
 import { Supplier } from "./supplier.entity";
 
 import { SuppliersService } from "./suppliers.service";
+import { IsAuthorized } from "../auth/guards/is-authorized.guard";
 
 
 @Controller("suppliers")
@@ -21,7 +21,7 @@ export class SuppliersController {
   }
 
   @Get(":id")
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(IsAuthorized)
   getOne(@Request() req, @Param("id") id: number): Promise<Supplier> {
       return this.suppliersService.findOne(req, id);
   }

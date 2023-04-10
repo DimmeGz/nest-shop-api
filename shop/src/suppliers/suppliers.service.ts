@@ -63,14 +63,6 @@ export class SuppliersService {
         }
       }
 
-    // async findByName(username: string): Promise<any> {
-    //     try {
-    //       return await this.supplierRepository.findOneByOrFail([{ phone: username }, { email: username }]);
-    //     }catch (e) {
-    //       throw new NotFoundException
-    //     }
-    //   }
-
     async checkUnique(property: Object): Promise<Supplier> {
         try {
             return await this.supplierRepository.findOneBy(property);

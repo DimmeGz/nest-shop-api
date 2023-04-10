@@ -8,6 +8,7 @@ import { OrdersController } from "./orders.controller";
 import { OrderRowModule } from "../order-rows/order-row.module";
 import { ProductsModule } from "../products/products.module";
 import { UsersModule } from "../users/users.module";
+import { RabbitMQModule } from "../rabbit-mq/rabbit-mq.module";
 
 @Module({
   providers: [
@@ -18,6 +19,7 @@ import { UsersModule } from "../users/users.module";
     OrderRowModule,
     ProductsModule,
     UsersModule,
+    RabbitMQModule,
     TypeOrmModule.forFeature([Order])
   ],
   exports: [OrdersService],

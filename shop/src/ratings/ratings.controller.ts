@@ -11,11 +11,11 @@ import {
   Request,
   UseGuards
 } from "@nestjs/common";
-import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { RatingsService } from "./ratings.service";
 import { Rating } from "./rating.entity";
 import { CreateRatingDto } from "./dto/create-rating.dto";
 import { UpdateRatingDto } from "./dto/update-rating.dto";
+import { IsAuthorized } from "../auth/guards/is-authorized.guard";
 
 
 @Controller("ratings")
@@ -34,7 +34,7 @@ export class RatingsController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(IsAuthorized)
   async create(@Request() req, @Body() createRatingDto: CreateRatingDto) {
     if (await this.ratingsService.ifAlreadyExist(req, createRatingDto)) {
       throw new HttpException('Rating already exist', HttpStatus.CONFLICT)
@@ -42,13 +42,13 @@ export class RatingsController {
     return this.ratingsService.create(req, createRatingDto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(IsAuthorized)
   @Patch(":id")
   update(@Request() req, @Body() updateRatingDto: UpdateRatingDto, @Param("id") id: number): Promise<any> {
     return this.ratingsService.update(req, id, updateRatingDto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(IsAuthorized)
   @Delete(":id")
   remove(@Request() req, @Param("id") id: number) {
     return this.ratingsService.remove(req, id);
