@@ -11,7 +11,7 @@ export class AuthService {
     private jwtService: JwtService
   ) { }
 
-  async login(data) {
+  async userLogin(data) {
     try {
       const user = await this.usersService.findByAuthField(data.authField)
       if (user) {

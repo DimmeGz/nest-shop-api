@@ -12,7 +12,7 @@ export class AuthController {
 
   @Post('/login')
   async login(@Request() req): Promise<string> {
-    return await this.client.send('login', req.body).toPromise();
+    return await this.client.send('user-login', req.body).toPromise();
   }
   
   @Post('/register')
