@@ -7,7 +7,6 @@ import { JwtModule } from "@nestjs/jwt";
 import { config } from 'dotenv';
 import { JwtStrategy } from "./strategies/jwt.strategy";
 import { SuppliersModule } from '../suppliers/suppliers.module';
-import { LocalSupplierStrategy } from './strategies/local-supplier.strategy';
 config();
 import { ClientsModule, Transport } from '@nestjs/microservices';
 
@@ -34,7 +33,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
     })
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalSupplierStrategy, JwtStrategy],
+  providers: [AuthService, JwtStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}

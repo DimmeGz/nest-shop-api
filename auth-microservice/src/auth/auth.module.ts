@@ -3,11 +3,13 @@ import { UsersModule } from '../users/users.module';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
+import { SuppliersModule } from '../suppliers/suppliers.module';
 require('dotenv').config()
 
 @Module({
   imports: [
     UsersModule,
+    SuppliersModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '2 days' },

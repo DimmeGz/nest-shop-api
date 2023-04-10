@@ -17,4 +17,13 @@ export class AuthController {
       return e
     }
   }
+
+  @EventPattern('supplier-login')
+  async supplierLogin(data) {
+    try {
+      return await this.authService.supplierLogin(data)
+    } catch (e) {
+      return e
+    }
+  }
 }

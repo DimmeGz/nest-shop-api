@@ -1,5 +1,4 @@
 import { Controller, Request, Post, UseGuards, Body, Inject } from "@nestjs/common";
-import { LocalSupplierAuthGuard } from "./guards/local-supplier-auth.guard";
 import { AuthService } from "./auth.service";
 import { CreateUserDto } from "../users/dto/create-user.dto";
 import { CreateSupplierDto } from "../suppliers/dto/create-supplier.dto";
@@ -20,10 +19,9 @@ export class AuthController {
     return this.authService.register(createUserDto);
   }
 
-  @UseGuards(LocalSupplierAuthGuard)
   @Post('/supplier_login')
   async supplierLogin(@Request() req) {
-    return this.authService.supplierLogin(req.user);
+    return await this.client.send('supplier-login', req.body).toPromise();
   }
 
   @Post('/supplier_register')
