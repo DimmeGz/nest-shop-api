@@ -15,6 +15,7 @@ import { RatingsModule } from "./ratings/ratings.module";
 import { SuppliersModule } from "./suppliers/suppliers.module";
 import { CommentsModule } from "./comments/comments.module";
 import { config } from 'dotenv';
+import { RabbitMQModule } from "./rabbit-mq/rabbit-mq.module";
 config();
 
 
@@ -31,6 +32,7 @@ config();
       autoLoadEntities: true,
       synchronize: true,
     }),
+    RabbitMQModule,
     UsersModule,
     AuthModule,
     ProductsModule,

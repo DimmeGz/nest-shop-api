@@ -3,27 +3,16 @@ import { AuthService } from './auth.service';
 import { UsersModule } from '../users/users.module';
 import { PassportModule } from '@nestjs/passport';
 import { AuthController } from "./auth.controller";
+import { RabbitMQModule } from '../rabbit-mq/rabbit-mq.module';
 import { JwtModule } from "@nestjs/jwt";
 import { config } from 'dotenv';
 import { JwtStrategy } from "./strategies/jwt.strategy";
 import { SuppliersModule } from '../suppliers/suppliers.module';
 config();
-import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
   imports: [
-    ClientsModule.register([
-      {
-        name: 'AUTH_MICROSERVICE', transport: Transport.RMQ,
-        options: {
-          urls: [process.env.RABBIT_MQ_URL],
-          queue: 'user-messages',
-          queueOptions: {
-            durable: false
-          },
-        },
-      },
-    ]),
+    RabbitMQModule,
     UsersModule,
     SuppliersModule,
     PassportModule,

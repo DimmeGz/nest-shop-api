@@ -6,6 +6,7 @@ import { UsersController } from "./users.controller";
 import { User } from "./user.entity";
 import { UserExistsRule } from "../middleware/unique.validator";
 import { config } from 'dotenv';
+import { RabbitMQModule } from "../rabbit-mq/rabbit-mq.module";
 config();
 
 @Module({
@@ -14,7 +15,10 @@ config();
     UserExistsRule,
     ],
   controllers: [UsersController],
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [
+    TypeOrmModule.forFeature([User]), 
+    RabbitMQModule,
+  ],
   exports: [UsersService],
 })
 export class UsersModule {

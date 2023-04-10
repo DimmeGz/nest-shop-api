@@ -1,6 +1,8 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { BadRequestException, Controller } from '@nestjs/common';
 import { EventPattern } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
+import * as jwt from 'jsonwebtoken';
+
 
 
 @Controller()
@@ -16,5 +18,14 @@ export class AuthController {
     } catch (e) {
       return e
     }
+  }
+
+  @EventPattern('get-user')
+  async validate(token) {
+    const userData = jwt.decode(token)
+    if (userData) {
+      return userData
+    }
+    throw new BadRequestException('Wrong access token')
   }
 }
