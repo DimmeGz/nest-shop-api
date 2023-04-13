@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
+import { ScheduleModule } from '@nestjs/schedule';
 import { AppService } from './app.service';
+import { RedisClientModule } from './redis-client/redis-client.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
+  imports: [RedisClientModule, ScheduleModule.forRoot()],
+  controllers: [],
   providers: [AppService],
 })
 export class AppModule {}

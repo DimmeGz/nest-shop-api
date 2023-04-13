@@ -1,41 +1,38 @@
 import { Injectable } from '@nestjs/common';
 import { InfluxDB, Point } from '@influxdata/influxdb-client'
-
+import { RedisClientService } from './redis-client/redis-client.service';
+import { Cron } from '@nestjs/schedule';
 
 import { config } from 'dotenv';
 config();
 
-
-
-
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'Hello Influx!';
-  }
+  constructor(private readonly redisClientService: RedisClientService) { }
 
+  @Cron(process.env.CRON_TIME)
   async influx() {
-    const token = process.env.INFLUXDB_TOKEN
-    const url = 'http://localhost:8086'
-    const client = new InfluxDB({ url, token })
+    const client = new InfluxDB({
+      url: process.env.INFLUXDB_URL,
+      token: process.env.INFLUXDB_TOKEN,
+    })
 
-    let org = `test-org`
-    let bucket = `test-bucket`
+    const writeClient = client.getWriteApi(
+      process.env.INFLUXDB_ORG,
+      process.env.INFLUXDB_BUCKET,
+      'ns'
+    )
 
-    let writeClient = client.getWriteApi(org, bucket, 'ns')
+    for await (let currency of process.env.CURRENCIES.split(',')) {
+      const currenciesPair = `${currency}:${process.env.BASECURRENCY}`;
+      const rate = await this.redisClientService.get(currenciesPair);
 
-    for (let i = 0; i < 5; i++) {
-      let point = new Point('measurement1')
-        .tag('tagname1', 'tagvalue1')
-        .intField('field1', i)
+      const point = new Point('currencies_rate')
+        .tag('currenciesPair', currenciesPair)
+        .floatField('rate', rate)
 
-      await setTimeout(() => {
-        writeClient.writePoint(point)
-      }, i * 1000) // separate points by 1 second
-
-      await setTimeout(() => {
-        writeClient.flush()
-      }, 5000)
+      await writeClient.writePoint(point)
+      await writeClient.flush()
     }
   }
 }
